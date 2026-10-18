@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#2ea8e8">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>译林英语 · 四年级</title>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --ink:#1f2733; --sub:#6b7686;
+  --accent:#4f7cff; --accent2:#6a5af9; --accent-soft:#eaf0ff;
+  --ok:#22b071; --ok-soft:#e6f7ef; --bad:#f0564a; --bad-soft:#fdeceb;
+  --star:#f6a609;
+  --radius:18px; --shadow:0 4px 16px rgba(31,39,51,.08);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",sans-serif;
+  background:var(--bg);color:var(--ink);font-size:17px;line-height:1.5;
+  overscroll-behavior-y:contain;
+}
+button{font-family:inherit;font-size:inherit;color:inherit;border:none;background:none;cursor:pointer}
+#app{max-width:980px;margin:0 auto;min-height:100%;padding-bottom:calc(24px + var(--safe-b))}
+
+/* ---------- 顶部栏 ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;background:rgba(244,246,251,.92);backdrop-filter:blur(10px);
+}
+.icon-btn{
+  width:42px;height:42px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:center;font-size:19px;flex:none;
+}
+.icon-btn:active{transform:scale(.94)}
+.topbar h1{font-size:18px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar h1 small{display:block;font-size:12px;color:var(--sub);font-weight:400}
+
+/* ---------- 首页 ---------- */
+.hero{padding:26px 20px 8px;text-align:center}
+.hero .logo{font-size:54px;line-height:1}
+.hero h2{font-size:26px;font-weight:800;margin:10px 0 6px;letter-spacing:.5px}
+.hero p{color:var(--sub);font-size:15px}
+.book-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:22px 18px}
+.book-card{
+  border-radius:24px;padding:26px 18px;color:#fff;min-height:200px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  box-shadow:0 10px 26px rgba(31,39,51,.16);transition:transform .12s;
+}
+.book-card:active{transform:scale(.97)}
+.book-card.a{background:linear-gradient(150deg,#5b8cff,#6a5af9)}
+.book-card.b{background:linear-gradient(150deg,#ff9f43,#ee5d6c)}
+.book-card .emoji{font-size:46px}
+.book-card .tag{font-size:12px;opacity:.85;letter-spacing:2px}
+.book-card h3{font-size:23px;margin:6px 0 2px}
+.book-card p{font-size:13px;opacity:.92}
+.foot-note{text-align:center;color:#9aa4b4;font-size:12.5px;padding:8px 24px 0}
+.foot-note b{color:var(--sub)}
+
+/* ---------- 单元网格 ---------- */
+.section-title{padding:6px 20px 4px;font-size:14px;color:var(--sub);font-weight:600}
+.unit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;padding:12px 18px}
+.unit-card{
+  background:var(--card);border-radius:var(--radius);padding:16px 16px 14px;
+  box-shadow:var(--shadow);display:flex;gap:12px;align-items:center;transition:transform .12s;
+  border-left:5px solid var(--accent);
+}
+.unit-card:active{transform:scale(.97)}
+.unit-card .u-emoji{
+  width:52px;height:52px;border-radius:14px;flex:none;
+  display:flex;align-items:center;justify-content:center;font-size:27px;background:var(--accent-soft)
+}
+.unit-card .u-no{font-size:12px;color:var(--sub);font-weight:700;letter-spacing:1px}
+.unit-card .u-en{font-size:16.5px;font-weight:700;line-height:1.25}
+.unit-card .u-cn{font-size:12.5px;color:var(--sub);margin-top:2px}
+.unit-card .u-go{margin-left:auto;color:#b4bdcc;font-size:20px;flex:none}
+
+/* ---------- 单元横幅 + 标签页 ---------- */
+.unit-banner{margin:4px 18px 0;border-radius:22px;padding:20px 22px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 8px 22px rgba(79,124,255,.28)}
+.unit-banner .n{font-size:13px;opacity:.9;letter-spacing:2px;font-weight:700}
+.unit-banner h3{font-size:24px;margin:4px 0 2px;font-weight:800}
+.unit-banner p{font-size:14px;opacity:.92}
+.tabs{display:flex;gap:8px;padding:16px 18px 4px;position:sticky;top:64px;z-index:40;background:linear-gradient(var(--bg) 82%,transparent)}
+.tab{
+  flex:1;padding:11px 4px;text-align:center;border-radius:13px;background:var(--card);
+  box-shadow:var(--shadow);font-weight:700;font-size:15.5px;color:var(--sub)
+}
+.tab .t-emoji{display:block;font-size:20px;margin-bottom:2px}
+.tab.on{background:var(--accent);color:#fff}
+.tab:active{transform:scale(.96)}
+.panel{padding:14px 18px 10px;display:none}
+.panel.on{display:block;animation:fade .2s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- 单词卡片 ---------- */
+.cmode{display:flex;background:#e7ebf4;border-radius:13px;padding:4px;margin:0 auto 14px;max-width:340px}
+.cmode button{flex:1;padding:9px;border-radius:10px;font-size:15px;font-weight:700;color:var(--sub)}
+.cmode button.on{background:#fff;color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.card-stage{perspective:1400px;max-width:460px;margin:0 auto}
+.flash{position:relative;height:300px;transform-style:preserve-3d;transition:transform .5s}
+.flick{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:var(--card);border-radius:26px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  padding:24px;text-align:center;
+}
+.face.back{transform:rotateY(180deg);background:linear-gradient(160deg,#ffffff,#eef3ff)}
+.face .w-en{font-size:42px;font-weight:800;letter-spacing:.5px;word-break:break-word}
+.face .w-ipa{font-size:18px;color:var(--accent);font-family:Georgia,serif}
+.face .w-hint{position:absolute;bottom:14px;font-size:12.5px;color:#a3adbd}
+.face .w-cn{font-size:34px;font-weight:800}
+.face .w-cn small{display:block;font-size:15px;color:var(--sub);font-weight:400;margin-top:8px}
+.speak-big{
+  margin-top:6px;width:64px;height:64px;border-radius:50%;background:var(--accent);color:#fff;
+  font-size:28px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 16px rgba(79,124,255,.4)
+}
+.speak-big:active{transform:scale(.92)}
+.card-bar{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:18px}
+.card-bar .navbtn{
+  width:58px;height:58px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);
+  font-size:22px;display:flex;align-items:center;justify-content:center
+}
+.card-bar .navbtn:active{transform:scale(.92)}
+.card-bar .navbtn.main{width:66px;height:66px;background:var(--accent);color:#fff;font-size:28px}
+.card-progress{text-align:center;color:var(--sub);font-size:14px;margin-top:12px;font-weight:600}
+.star-btn{position:absolute;top:14px;right:16px;font-size:26px;color:#d7dce6;z-index:2}
+.star-btn.on{color:var(--star)}
+
+/* ---------- 词表 ---------- */
+.wlist{display:flex;flex-direction:column;gap:10px;max-width:680px;margin:0 auto}
+.wrow{
+  display:flex;align-items:center;gap:12px;background:var(--card);border-radius:15px;
+  padding:13px 16px;box-shadow:var(--shadow)
+}
+.wrow:active{background:#f7f9ff}
+.wrow .txt{flex:1;min-width:0}
+.wrow .en{font-size:19px;font-weight:700}
+.wrow .ipa{font-size:13.5px;color:var(--accent);font-family:Georgia,serif;margin-left:8px}
+.wrow .cn{font-size:14px;color:var(--sub);margin-top:1px}
+.wrow .sp{width:42px;height:42px;border-radius:50%;background:var(--accent-soft);font-size:18px;display:flex;align-items:center;justify-content:center;flex:none;color:var(--accent)}
+.wrow .st{font-size:20px;color:#d7dce6;flex:none;width:26px;text-align:center}
+.wrow .st.on{color:var(--star)}
+
+/* ---------- 课文 ---------- */
+.story-ctrl{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:14px;max-width:680px;margin-left:auto;margin-right:auto}
+.btn{padding:10px 16px;border-radius:13px;background:var(--card);box-shadow:var(--shadow);font-weight:700;font-size:15px;display:inline-flex;align-items:center;gap:6px}
+.btn:active{transform:scale(.95)}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.toggle.on{background:var(--accent-soft);color:var(--accent)}
+.story-title{text-align:center;font-weight:800;font-size:17px;color:var(--sub);margin:2px 0 16px}
+.sline{display:flex;gap:12px;max-width:680px;margin:0 auto 14px;cursor:pointer;align-items:flex-start}
+.sline.narr{flex-direction:column;align-items:center;text-align:center}
+.avatar{
+  width:44px;height:44px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:#fff;font-weight:800
+}
+.sline.narr .avatar{background:#b7c0d0;width:auto;height:auto;padding:2px 14px;border-radius:20px;font-size:12.5px;font-weight:700}
+.sbubble{background:var(--card);border-radius:4px 16px 16px 16px;padding:12px 16px;box-shadow:var(--shadow);flex:1}
+.sline.narr .sbubble{border-radius:16px;background:#f3f5fa;max-width:560px}
+.sbubble .en{font-size:19px;line-height:1.55;font-weight:600}
+.sbubble .zh{font-size:14px;color:var(--sub);margin-top:5px;display:none}
+.show-zh .sbubble .zh{display:block}
+.sline.reading .sbubble{outline:3px solid var(--accent);background:var(--accent-soft)}
+.sline.reading.narr .sbubble{background:var(--accent-soft)}
+.speaking-ico{font-size:14px;color:var(--accent);margin-left:4px;display:none}
+.sline.reading .speaking-ico{display:inline}
+
+/* ---------- 测验 ---------- */
+.quiz-home{max-width:560px;margin:6px auto 0;text-align:center}
+.quiz-home .q-emoji{font-size:48px}
+.quiz-modes{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+.qsec{display:flex;align-items:baseline;gap:8px;margin-top:26px;font-weight:800;font-size:16.5px}
+.qsec small{font-weight:600;font-size:12px;color:var(--accent);background:var(--accent-soft);padding:2px 10px;border-radius:99px}
+.qsec+.quiz-modes{margin-top:10px}
+.qcard.phr .qprompt{font-size:22px;font-weight:700}
+.qcard.sent .qprompt{font-size:19px;font-weight:700;line-height:1.55}
+.qcard.sent .opt{font-size:15.5px;font-weight:500;padding:13px 15px}
+.qcard.sent .opt .key{width:26px;height:26px;font-size:13px}
+.qmode{
+  background:var(--card);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:15px;text-align:left
+}
+.qmode:active{transform:scale(.98)}
+.qmode .qe{font-size:32px;width:54px;height:54px;border-radius:14px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex:none}
+.qmode b{font-size:18px}
+.qmode small{display:block;color:var(--sub);font-size:13.5px;margin-top:2px}
+.qcard{max-width:600px;margin:0 auto;background:var(--card);border-radius:22px;padding:26px 22px;box-shadow:var(--shadow)}
+.qprog{height:8px;border-radius:5px;background:#e9edf5;overflow:hidden;margin-bottom:18px}
+.qprog i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:5px;transition:width .3s}
+.qmeta{text-align:center;color:var(--sub);font-size:14px;margin-bottom:14px}
+.qprompt{text-align:center;font-size:30px;font-weight:800;margin:6px 0 4px;word-break:break-word}
+.qprompt-ipa{text-align:center;color:var(--accent);font-family:Georgia,serif;font-size:16px;margin-bottom:6px}
+.qreplay{display:block;margin:0 auto 14px;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;font-size:24px;box-shadow:0 6px 14px rgba(79,124,255,.35)}
+.opts{display:flex;flex-direction:column;gap:11px;margin-top:8px}
+.opt{
+  background:#f5f7fc;border:2px solid transparent;border-radius:15px;padding:15px 18px;
+  font-size:18px;font-weight:600;text-align:left;display:flex;align-items:center;gap:10px
+}
+.opt:active{background:#eaf0ff}
+.opt .key{width:30px;height:30px;border-radius:9px;background:#fff;box-shadow:var(--shadow);font-size:15px;display:flex;align-items:center;justify-content:center;flex:none;color:var(--sub)}
+.opt.correct{background:var(--ok-soft);border-color:var(--ok);color:#177a4f}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad);color:#c23b31}
+.opt[disabled]{pointer-events:none;opacity:.85}
+.opt.dim{opacity:.5}
+.qfeedback{text-align:center;font-weight:800;font-size:17px;margin-top:14px;min-height:24px}
+.qfeedback.ok{color:var(--ok)}
+.qfeedback.bad{color:var(--bad)}
+.qnext{display:block;margin:14px auto 0}
+.qresult{text-align:center;padding:20px 10px}
+.qresult .big-score{font-size:56px;font-weight:900;color:var(--accent)}
+.qresult p{color:var(--sub);margin:4px 0 18px}
+.qresult .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.opt.picked{border-color:var(--accent);background:var(--accent-soft)}
+.qmodal-mask{position:fixed;inset:0;z-index:200;background:rgba(31,39,51,.45);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .18s}
+.qmodal-mask.show{opacity:1;pointer-events:auto}
+.qmodal{background:var(--card);border-radius:22px;padding:24px 22px;max-width:400px;width:100%;box-shadow:0 18px 50px rgba(31,39,51,.28);transform:scale(.9);transition:transform .18s;text-align:center}
+.qmodal-mask.show .qmodal{transform:scale(1)}
+.qmodal .qm-emoji{font-size:38px}
+.qmodal h4{font-size:19px;margin:6px 0 4px}
+.qmodal .qm-choice{background:var(--accent-soft);color:var(--accent);border-radius:14px;padding:12px 14px;font-weight:700;font-size:16px;word-break:break-word;margin:12px 0 18px;line-height:1.5}
+.qmodal .qm-btns{display:flex;gap:12px}
+.qmodal .qm-btns .btn{flex:1}
+.hidden{display:none!important}
+
+@media (max-width:560px){
+  .book-grid{grid-template-columns:1fr}
+  .book-card{min-height:150px}
+  .face .w-en{font-size:34px}
+  .face .w-cn{font-size:28px}
+  .tabs{top:60px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<!-- 答案确认弹窗 -->
+<div class="qmodal-mask" id="qmodal" onclick="if(event.target===this)cancelPick()">
+  <div class="qmodal">
+    <div class="qm-emoji">🤔</div>
+    <h4>确定选这个答案吗？</h4>
+    <div class="qm-choice" id="qm-choice"></div>
+    <div class="qm-btns">
+      <button class="btn" onclick="cancelPick()">↩️ 再想想</button>
+      <button class="btn primary" onclick="confirmPick()">✅ 确认</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= 教材数据（译林版三起·2025秋四上 / 2026春四下） ================= */
+const DATA = {
+books:[
+{ id:'4a', name:'四年级上册', en:'Grade 4 · Book A', emoji:'📘', cls:'a',
+  units:[
+  { n:1, emoji:'📚', title:'Our school subjects', cn:'我们的学校课程',
+    words:[
+      ['subject','/ˈsʌbdʒɪkt/','学科，科目'],['Chinese','/ˌtʃaɪˈniːz/','语文（课）；中国的'],
+      ['English','/ˈɪŋɡlɪʃ/','英语（课）'],['Maths','/mæθs/','数学（课）'],
+      ['PE','/ˌpiː ˈiː/','体育（课）'],['Art','/ɑːt/','美术（课）'],
+      ['Science','/ˈsaɪəns/','科学（课）'],['IT','/ˌaɪ ˈtiː/','信息科技（课）'],
+      ['Music','/ˈmjuːzɪk/','音乐（课）'],['Labour','/ˈleɪbə(r)/','劳动（课）'],
+      ['best','/best/','最，最高程度地'],['also','/ˈɔːlsəʊ/','也'],
+      ['mouse','/maʊs/ (pl. mice)','鼠标；老鼠'],['new','/njuː/','新的'],
+      ['timetable','/ˈtaɪmteɪbl/','课程表'],['number','/ˈnʌmbə(r)/','数字'],
+      ['interesting','/ˈɪntrəstɪŋ/','有趣的'],['culture','/ˈkʌltʃə(r)/','文化，文明'],
+      ['read','/riːd/','阅读'],['story','/ˈstɔːri/','故事'],
+      ['all','/ɔːl/','全部，都'],['sports ground','/ˈspɔːts ɡraʊnd/','操场，运动场']
+    ],
+    phrases:[
+      ["It's time for ...","是……的时候了"],["Welcome back to ...","欢迎回到……"],
+      ['be good at ...','擅长……'],['learn about ...','学习；了解……'],
+      ['like ... best','最喜欢……'],['read English stories','读英语故事'],
+      ['go to the sports ground','去操场'],['favourite subject','最喜爱的学科'],
+      ['welcome back to school','欢迎回到学校'],['learn about Chinese culture','了解中国文化'],
+      ['be good at numbers','擅长数字'],['What subject do you like best?','你最喜欢什么学科？']
+    ],
+    story:{t:'My favourite subject（我最喜爱的学科）',lines:[
+      ['Miss Li','Welcome back to school, class.','同学们，欢迎回到校园。'],
+      ['Miss Li',"Look, boys and girls. This is our new timetable. We have Chinese, Maths, English and Science. We also have Art, PE and Music.",'同学们看，这是我们的新课程表。我们有语文、数学、英语和科学，还有美术、体育和音乐。'],
+      ['Liu Tao',"I like Maths. I'm good at it. What subject do you like best?",'我喜欢数学，我很擅长数学。你最喜欢什么学科？'],
+      ['Wang Bing',"I like Science best. It's interesting.",'我最喜欢科学，它很有意思。'],
+      ['Mike',"I like Chinese best. I want to learn about Chinese culture.",'我最喜欢语文，我想了解中国文化。'],
+      ['Yang Ling',"I like English best. I like reading English stories.",'我最喜欢英语，我喜欢读英语故事。'],
+      ['Yang Ling',"It's time for PE.",'该上体育课了。'],
+      ['Wang Bing',"We all like PE!",'我们都喜欢体育！'],
+      ['Mike',"Let's go to the sports ground!",'我们去操场吧！']
+    ]}
+  },
+  { n:2, emoji:'⏰', title:'My day', cn:'我的一天',
+    words:[
+      ['day','/deɪ/','一天，一日'],['get up','/ɡet ʌp/','起床'],['wash','/wɒʃ/','洗'],
+      ['face','/feɪs/','脸，面孔'],['have lessons','','上课'],['have','/hæv/','吃，喝'],
+      ['dinner','/ˈdɪnə(r)/','正餐（常指晚餐）'],['breakfast','/ˈbrekfəst/','早餐，早饭'],
+      ['lunch','/lʌntʃ/','午餐，午饭'],['go to bed','','上床睡觉'],
+      ["o'clock",'/əˈklɒk/','（表示整点）……点钟'],['early','/ˈɜːli/','早的；早'],
+      ['thirty','/ˈθɜːti/','三十'],['first','/fɜːst/','首先，第一'],
+      ['hurry up','','快点'],['twenty','/ˈtwenti/','二十'],
+      ['class','/klɑːs/','课，上课'],['eleven','/ɪˈlevn/','十一'],
+      ['sport','/spɔːt/','体育运动'],['fifteen','/ˌfɪfˈtiːn/','十五'],['bed','/bed/','床']
+    ],
+    phrases:[
+      ['get up','起床'],['wash my face','洗脸'],['have breakfast','吃早饭'],
+      ['have lessons','上课'],['have lunch','吃午饭'],['have dinner','吃晚饭'],
+      ['go to bed','上床睡觉'],['hurry up','快点'],
+      ['What time is it?','几点了？'],["I'm coming!",'我来了！'],
+      ['Come on!','赶快！加把劲！'],["It's time to ...",'到了……的时间了'],
+      ['Good night!','晚安！'],['seven twenty','七点二十'],
+      ['time for class','上课时间'],['time for bed','睡觉时间']
+    ],
+    story:{t:"Wang Bing's day（王兵的一天）",lines:[
+      ['Wang Bing','Good morning, Mum. What time is it?','早上好，妈妈。现在几点了？'],
+      ['Mum',"Good morning, Bingbing. It's seven twenty. Let's have breakfast.",'早上好，兵兵。七点二十了，我们吃早饭吧。'],
+      ['Wang Bing',"Come on, Mike! It's time for class!",'迈克，快点儿！该上课了！'],
+      ['Mike',"I'm coming.",'我来了。'],
+      ['Wang Bing',"It's eleven thirty.",'十一点半了。'],
+      ['Su Hai',"Yes, it's lunchtime. Let's go and have lunch.",'对，午饭时间到了，我们去吃午饭吧。'],
+      ['Wang Bing',"It's four thirty. It's time for sport.",'四点半了，该做运动了。'],
+      ['Liu Tao',"Great! Let's go to the sports ground.",'太好了！我们去操场吧。'],
+      ['Dad',"It's six fifteen. It's time to have dinner.",'六点十五了，该吃晚饭了。'],
+      ['Wang Bing','What time is it, Mum?','妈妈，几点了？'],
+      ['Mum',"It's nine o'clock. It's time for bed.",'九点了，该睡觉了。'],
+      ['Wang Bing','All right, Mum. Good night!','好的，妈妈。晚安！']
+    ]}
+  },
+  { n:3, emoji:'📅', title:'My week', cn:'我的一周',
+    words:[
+      ['week','/wiːk/','周，星期'],['Monday','/ˈmʌndeɪ/','星期一'],['Tuesday','/ˈtjuːzdeɪ/','星期二'],
+      ['Wednesday','/ˈwenzdeɪ/','星期三'],['Thursday','/ˈθɜːzdeɪ/','星期四'],['Friday','/ˈfraɪdeɪ/','星期五'],
+      ['Saturday','/ˈsætədeɪ/','星期六'],['Sunday','/ˈsʌndeɪ/','星期天'],
+      ['when','/wen/','什么时候'],['every','/ˈevri/','每一个，每个'],
+      ['at','/æt/','在（某时间）'],['up','/ʌp/','起床'],
+      ['early','/ˈɜːli/','提早，提前'],['today','/təˈdeɪ/','在今天'],
+      ['cinema','/ˈsɪnəmə/','电影院'],['after school','','放学后'],
+      ['dancing','/ˈdɑːnsɪŋ/','跳舞，舞蹈'],['lesson','/ˈlesn/','一节课，一课时'],
+      ['walk','/wɔːk/','牵着（动物）走，遛'],['dog','/dɒɡ/','狗'],
+      ['tomorrow','/təˈmɒrəʊ/','明天'],['free','/friː/','空闲的']
+    ],
+    phrases:[
+      ['What day is it today?','今天星期几？'],['See you tomorrow!','明天见！'],
+      ['after school','放学后'],['go to the cinema','去看电影'],
+      ['have a dancing lesson','上舞蹈课'],['walk my dog','遛狗'],
+      ['every week','每周'],['be free on Saturday','星期六有空'],
+      ['get up early','早起'],['be late for school','上学迟到'],
+      ['on Wednesday and Friday','在星期三和星期五'],['a good idea','一个好主意']
+    ],
+    story:{t:'After school（放学后）',lines:[
+      ['Liu Tao',"It's Friday today. Let's go to the cinema after school.",'今天星期五，放学后我们去看电影吧。'],
+      ['Su Hai',"It's a good idea, but I have a dancing lesson today. I have two dancing lessons every week.",'这是个好主意，不过我今天要上舞蹈课。我每周有两节舞蹈课。'],
+      ['Liu Tao','When do you have dancing lessons?','你什么时候上舞蹈课？'],
+      ['Su Hai','On Wednesday and Friday.','星期三和星期五。'],
+      ['Liu Tao','What about you, Mike?','你呢，迈克？'],
+      ['Mike','Sorry, I walk my dog on Tuesday and Friday.','抱歉，我星期二和星期五要遛狗。'],
+      ['Liu Tao','What about tomorrow?','明天怎么样？'],
+      ['Mike',"OK. I'm free on Saturday.",'好啊，我星期六有空。'],
+      ['Su Hai','Me too.','我也是。'],
+      ['Liu Tao','Great! See you tomorrow!','太好了！明天见！']
+    ]}
+  },
+  { n:4, emoji:'⚽', title:'I like sport', cn:'我喜欢运动',
+    words:[
+      ['play','/pleɪ/','打（球），踢（球）'],['football','/ˈfʊtbɔːl/','足球运动；足球'],
+      ['ping-pong','/ˈpɪŋ pɒŋ/','乒乓球运动'],['basketball','/ˈbɑːskɪtbɔːl/','篮球运动；篮球'],
+      ['great','/ɡreɪt/','非常好的'],['swimming','/ˈswɪmɪŋ/','游泳；游泳运动'],
+      ['so','/səʊ/','这么，那么'],['well','/wel/','好'],
+      ['hard','/hɑːd/','难做的，不易的'],['try','/traɪ/','试'],
+      ['run','/rʌn/','跑；跑步'],['fit','/fɪt/','健康的']
+    ],
+    phrases:[
+      ['Have a go!','试一试！'],['Well played!','好球！打得好！'],["It's OK.",'没关系。'],
+      ['try again','再试一次'],['play football','踢足球'],['play basketball','打篮球'],
+      ['play ping-pong','打乒乓球'],['like running','喜欢跑步'],
+      ['play with us','和我们一起玩'],['great fun','非常有趣'],
+      ['play so well','打得这么好'],['be good for ...','对……有益'],['keep fit','保持健康']
+    ],
+    story:{t:'Ping-pong is fun（乒乓球真有趣）',lines:[
+      ['Liu Tao',"I like sport. It's good for us.",'我喜欢运动，它对我们有好处。'],
+      ['Wang Bing','Me too. I like swimming and playing ping-pong. What about you?','我也是。我喜欢游泳和打乒乓球。你呢？'],
+      ['Liu Tao',"I like playing ping-pong too. Let's go and play.",'我也喜欢打乒乓球。我们去打球吧。'],
+      ['Wang Bing','Good idea.','好主意。'],
+      ['Wang Bing','Cool! You play so well.','太酷了！你打得真好。'],
+      ['Liu Tao','Thanks.','谢谢！'],
+      ['Wang Bing','Hi, Mike! Do you like playing ping-pong?','嗨，迈克！你喜欢打乒乓球吗？'],
+      ['Mike',"Yes, I do. Ping-pong is fun. But I can't play well.",'是的，我喜欢。乒乓球很有趣，可我打不好。'],
+      ['Wang Bing','Have a go!','试一试！'],
+      ['Mike','OK.','好的。'],
+      ['Mike',"Oh no! It's hard for me.",'噢，糟了！这对我来说太难了。'],
+      ['Wang Bing',"It's OK. Try again.",'没关系，再试一次。'],
+      ['Wang Bing','Well played!','打得好！'],
+      ['Liu Tao','Good!','好球！'],
+      ['Mike','Thank you! Ping-pong is great fun!','谢谢！乒乓球太好玩了！']
+    ]}
+  },
+  { n:5, emoji:'🤖', title:'Different toys, same fun', cn:'不同的玩具，同样的快乐',
+    words:[
+      ['different','/ˈdɪfrənt/','不同的，有区别的'],['same','/seɪm/','相同的，同一的'],
+      ['hair','/heə(r)/','头发'],['eye','/aɪ/','眼睛'],['ear','/ɪə(r)/','耳朵'],
+      ['nose','/nəʊz/','鼻子'],['mouth','/maʊθ/','嘴，口'],
+      ['arm','/ɑːm/','手臂'],['leg','/leɡ/','腿'],
+      ['robot','/ˈrəʊbɒt/','机器人'],['his','/hɪz/','他的'],
+      ['tall','/tɔːl/','高的'],['short','/ʃɔːt/','短的；矮的'],
+      ['doll','/dɒl/','玩具娃娃'],['her','/hɜː(r)/','她的'],
+      ['small','/smɔːl/','小的'],['big','/bɪɡ/','大的'],
+      ['bring','/brɪŋ/','带来'],['lots of','','大量，许多'],
+      ['have','/hæv/','组织，举办'],['show','/ʃəʊ/','表演，演出']
+    ],
+    phrases:[
+      ['lots of','大量，许多'],['look at ...','看……'],
+      ['bring ... lots of fun','给……带来很多乐趣'],['share the fun with ...','和……分享乐趣'],
+      ['have a show','举办一场表演'],["let's dance together",'我们一起跳舞吧'],
+      ['his eyes','他的眼睛'],['her lovely face','她可爱的脸'],
+      ['so tall','这么高'],['a big mouth','一张大嘴巴'],
+      ["It's great fun.",'真的很有趣。']
+    ],
+    story:{t:'Our dolls（我们的玩偶）',lines:[
+      ['Su Yang','Mum, do you like our dolls?','妈妈，您喜欢我们的玩偶吗？'],
+      ['Mum',"Yes! They're cute.",'喜欢！它们真可爱。'],
+      ['Su Hai',"My doll is a girl. Look at her lovely face. Her eyes are big. Her nose and mouth are small. Her hair is long.",'我的玩偶是个女孩。看它可爱的脸蛋——眼睛大大的，鼻子和嘴巴小小的，头发长长的。'],
+      ['Su Yang',"My doll is a boy. His eyes are small. His nose is small too. But his mouth is big. His arms and legs are long.",'我的玩偶是个男孩。它的眼睛小小的，鼻子也小小的，可是嘴巴大大的，手臂和腿长长的。'],
+      ['Mum','Your dolls are great. They bring you lots of fun!','你们的玩偶真棒，它们给你们带来了许多欢乐！'],
+      ['Su Hai',"We can have fun together with our friends. Let's have a show!",'我们可以和朋友们一起分享快乐，办一场玩偶表演吧！'],
+      ['Su Yang','Good idea!','好主意！']
+    ]}
+  },
+  { n:6, emoji:'🌤️', title:'Weather', cn:'天气',
+    words:[
+      ['weather','/ˈweðə(r)/','天气，气象'],['cloudy','/ˈklaʊdi/','多云的，阴天的'],
+      ['sunny','/ˈsʌni/','晴朗的'],['cool','/kuːl/','凉的，凉爽的'],
+      ['rainy','/ˈreɪni/','阴雨的，多雨的'],['hot','/hɒt/','温度高的，热的'],
+      ['windy','/ˈwɪndi/','多风的，风大的'],['warm','/wɔːm/','温暖的，暖和的'],
+      ['money','/ˈmʌni/','钱'],['park','/pɑːk/','公园'],
+      ['meet','/miːt/','（与……）会面，集合'],['worry','/ˈwʌri/','担心，担忧'],
+      ['umbrella','/ʌmˈbrelə/','伞，雨伞'],['there','/ðeə(r)/','到那里，在那里']
+    ],
+    phrases:[
+      ["What's the weather like today?",'今天天气怎么样？'],['fly a kite','放风筝'],
+      ['save ... for a rainy day','未雨绸缪'],['go to the park','去公园'],
+      ['play outside','在外面玩'],['meet at ten','十点见面'],
+      ["It's raining.",'下雨了。'],["Don't worry.",'别担心。'],
+      ['sunny and warm','晴朗又暖和'],['windy and cloudy','多风又多云'],['have an umbrella','有一把伞']
+    ],
+    story:{t:'In the park（在公园里）',lines:[
+      ['Yang Ling',"Hi, Su Hai! Let's go to the park today.",'嗨，苏海！今天我们去公园吧。'],
+      ['Su Hai',"Good idea! What's the weather like?",'好主意！天气怎么样？'],
+      ['Yang Ling',"It's sunny and warm.",'阳光明媚，也很暖和。'],
+      ['Su Hai','OK. Let’s meet at ten.','好，我们十点见。'],
+      ['Yang Ling',"It's nice here. I like playing outside!",'这儿真舒服，我喜欢在外面玩！'],
+      ['Su Hai',"It's windy and cloudy now. We can fly a kite.",'现在起风了，天也阴了，我们可以放风筝。'],
+      ['Yang Ling',"It's nice and cool now. Let's have lunch!",'现在凉爽宜人，我们吃午饭吧！'],
+      ['Su Hai',"Oh no! It's raining.",'噢，糟了！下雨了。'],
+      ["Yang Ling's mum",'Don’t worry. I have an umbrella with me.','别担心，我带伞了。'],
+      ['Su Hai','I also have an umbrella. We can share it.','我也带伞了，我们可以一起用。'],
+      ['Yang Ling',"Let's go and draw pictures there!",'我们到那边去画画吧！'],
+      ['Su Hai','OK!','好的！']
+    ]}
+  },
+  { n:7, emoji:'🍂', title:'Seasons', cn:'季节',
+    words:[
+      ['season','/ˈsiːzn/','季节'],['spring','/sprɪŋ/','春天，春季'],
+      ['summer','/ˈsʌmə(r)/','夏天，夏季'],['autumn','/ˈɔːtəm/','秋天，秋季'],
+      ['winter','/ˈwɪntə(r)/','冬天，冬季'],['go boating','','去划船'],
+      ['go skating','','去溜冰，去滑冰'],['go swimming','','去游泳'],
+      ['go climbing','','去爬山'],['ice cream','','冰激凌'],
+      ['cold','/kəʊld/','寒冷的，冷的'],['bird','/bɜːd/','鸟'],
+      ['back','/bæk/','回原处'],['year','/jɪə(r)/','年'],
+      ['plant','/plɑːnt/','栽种，种植'],['pick','/pɪk/','采，摘'],
+      ['snow','/snəʊ/','雪，积雪']
+    ],
+    phrases:[
+      ['in spring','在春天'],['in summer','在夏天'],['in autumn','在秋天'],['in winter','在冬天'],
+      ['four seasons','四季'],['in a year','一年里'],['plant trees','种树'],
+      ['pick fruit','摘水果'],['eat ice cream','吃冰激凌'],
+      ['play in the snow','在雪地里玩'],['play together','一起玩'],['be back','回来']
+    ],
+    story:{t:'Four seasons（四季）',lines:[
+      ['','We have four seasons in a year.','一年有四个季节。'],
+      ['','In spring, it is warm. We plant trees. We go boating. We like spring.','春天，天气暖和。我们种树，去划船。我们喜欢春天。'],
+      ['','In summer, it is hot. We eat ice cream. We go swimming. We like summer.','夏天，天气炎热。我们吃冰淇淋，去游泳。我们喜欢夏天。'],
+      ['','In autumn, it is cool. We pick fruit. We go climbing. We like autumn.','秋天，天气凉爽。我们摘水果，去爬山。我们喜欢秋天。'],
+      ['','In winter, it is cold. We play in the snow. We go skating. We like winter.','冬天，天气寒冷。我们在雪地里玩，去滑冰。我们喜欢冬天。']
+    ]}
+  },
+  { n:8, emoji:'👕', title:'What we wear', cn:'我们穿什么',
+    words:[
+      ['wear','/weə(r)/','穿，戴'],['cap','/kæp/','便帽'],['coat','/kəʊt/','外套，外衣'],
+      ['skirt','/skɜːt/','半身裙'],['trousers','/ˈtraʊzəz/','裤子'],
+      ['dress','/dres/','连衣裙'],['shirt','/ʃɜːt/','（男式）衬衫'],
+      ['whose','/huːz/','谁的'],['shorts','/ʃɔːts/','短裤'],
+      ['look','/lʊk/','看来好像，显得'],['in','/ɪn/','穿着，戴着'],
+      ['sunglasses','/ˈsʌnɡlɑːsɪz/','太阳镜，墨镜'],['why','/waɪ/','为什么'],
+      ['because','/bɪˈkɒz/','因为'],['bright','/braɪt/','明亮的；聪明的'],
+      ['clothes','/kləʊðz/','衣服']
+    ],
+    phrases:[
+      ['Whose ... is this?','这是谁的……？'],['Whose ... are these?','这些是谁的……？'],
+      ['wear red clothes','穿红色衣服'],['look cool','看起来很酷'],
+      ['look beautiful','看起来很漂亮'],['put on','穿上，戴上'],
+      ['Chinese New Year','春节（农历新年）'],["my father's new shirt",'我爸爸的新衬衫'],
+      ['Happy Chinese New Year!','春节快乐！']
+    ],
+    story:{t:'Happy Chinese New Year!（春节快乐！）',lines:[
+      ['Mike','Hi, Su Hai! Happy Chinese New Year!','嗨，苏海！春节快乐！'],
+      ['Su Hai','Thank you, Mike!','谢谢你，迈克！'],
+      ['Mike','Your red dress is beautiful!','你的红连衣裙真漂亮！'],
+      ['Su Hai','Thanks. We like wearing red clothes at Chinese New Year.','谢谢。我们喜欢在春节穿红色的衣服。'],
+      ['Su Hai',"Look! This is my father's new shirt. And this is my mother's coat.",'看！这是我爸爸的新衬衫，这是我妈妈的外套。'],
+      ['Mike','How nice!','真好看！'],
+      ['Mike','Whose skirt is this?','这是谁的短裙？'],
+      ['Su Hai','Guess!','你猜猜看！'],
+      ['Mike',"Is it Su Yang's?",'是苏洋的吗？'],
+      ['Su Hai',"Yes, you're right!",'是的，你猜对了！'],
+      ['Mike','Whose caps are those? They’re so cute!','那些是谁的帽子？真可爱！'],
+      ['Su Hai',"They're Kitty's!",'是基蒂（Kitty）的！']
+    ]}
+  }
+]},
+{ id:'4b', name:'四年级下册', en:'Grade 4 · Book B', emoji:'📗', cls:'b',
+  units:[
+  { n:1, emoji:'🦁', title:"We're friends", cn:'我们是朋友',
+    words:[
+      ['weak','/wiːk/','虚弱的，无力的'],['strong','/strɒŋ/','强壮的'],
+      ['there are','','有（复数）'],['them','/ðəm/','它们，他们，她们（宾格）'],
+      ['from','/frəm/','来自'],['party','/ˈpɑːti/','聚会，联欢会'],
+      ['like','/laɪk/','像……一样'],['friendship','/ˈfrendʃɪp/','友谊'],
+      ['forest','/ˈfɒrɪst/','森林'],['thin','/θɪn/','瘦的'],
+      ['back','/bæk/','背部'],['angry','/ˈæŋɡri/','发怒的，生气的'],
+      ['one day','','有朝一日'],['how','/haʊ/','怎样，如何'],
+      ['net','/net/','网'],['sad','/sæd/','悲哀的，难过的'],
+      ['there is','','有（单数）'],['hole','/həʊl/','洞'],
+      ['kind','/kaɪnd/','友好的，体贴的'],['become','/bɪˈkʌm/','变成，变为']
+    ],
+    phrases:[
+      ['one day','有朝一日'],['Go away!','走开！'],['Help!','救命啊！'],
+      ['big and strong','又大又壮'],['small and thin','又小又瘦'],
+      ['in the forest','在森林里'],["on the lion's back",'在狮子的背上'],
+      ['in the net','在网里'],["You're so kind.",'你真好。'],
+      ['become good friends','成为好朋友']
+    ],
+    story:{t:'The lion and the mouse（狮子和老鼠）',lines:[
+      ['','There are many animals in the forest. The lion is big and strong. The mouse is small and thin.','森林里有许多动物。狮子又大又强壮，老鼠又小又瘦。'],
+      ['',"The mouse is on the lion's back. The lion is angry.",'老鼠在狮子的背上。狮子很生气。'],
+      ['Mouse',"Please don't eat me. I can help you one day.",'请不要吃我。有朝一日我能帮到你。'],
+      ['Lion','Ha ha! How can you help me? You’re so weak!','哈哈！你怎么能帮我？你太弱小了！'],
+      ['Mouse','Please!','求求你！'],
+      ['Lion','OK. Go away!','好吧。走开！'],
+      ['','The lion is in the net. He is sad.','狮子被困在网里，他很伤心。'],
+      ['Lion','Help!','救命啊！'],
+      ['Mouse','Let me help you.','让我来帮你。'],
+      ['','There is a big hole in the net.','网上被咬出了一个大洞。'],
+      ['Lion',"Thank you! You're so kind.",'谢谢你！你真是太善良了。'],
+      ['','The lion and the mouse become good friends.','狮子和老鼠成了好朋友。']
+    ]}
+  },
+  { n:2, emoji:'🏫', title:'Helping others at school', cn:'在学校帮助他人',
+    words:[
+      ['other','/ˈʌðə(r)/','另外，其他'],['room','/ruːm/','房间'],
+      ['computer','/kəmˈpjuːtə(r)/','计算机，电脑'],['swing','/swɪŋ/','秋千'],
+      ['playground','/ˈpleɪɡraʊnd/','游戏场，操场'],['careful','/ˈkeəfl/','小心的，谨慎的'],
+      ['feel','/fiːl/','觉得，感到'],['take','/teɪk/','带，拿'],
+      ['first','/fɜːst/','第一'],['floor','/flɔː(r)/','楼层'],
+      ['any','/ˈeni/','任何的，任一的'],['third','/θɜːd/','第三'],
+      ['later','/ˈleɪtə(r)/','以后，后来'],['piano','/piˈænəʊ/','钢琴'],
+      ['second','/ˈsekənd/','第二']
+    ],
+    phrases:[
+      ['have a look','看一看'],['show ... around','带……参观'],
+      ['be careful','小心'],["I'm new here.",'我是新来的。'],
+      ['come with me','跟我来'],['Are there any ...?','有……吗？'],
+      ['Let me help you.','我来帮你。'],["You're welcome.",'别客气。'],
+      ['on the first floor','在一楼'],['on the second floor','在二楼'],
+      ['on the third floor','在三楼']
+    ],
+    story:{t:'Let me show you around（让我带你参观）',lines:[
+      ['Nancy',"Here's your book.",'这是你的书。'],
+      ['Yang Ling','Thanks.','谢谢。'],
+      ['Yang Ling','I want to take these books to the library.','我想把这些书带到图书馆去。'],
+      ['Nancy',"I can help you. But where's the library? I'm new here.",'我可以帮你。但图书馆在哪里呀？我是新来的。'],
+      ['Yang Ling',"It's on the first floor. Come with me. I'm Yang Ling. Welcome.",'在一楼。跟我来。我是杨玲，欢迎你。'],
+      ['Nancy',"I'm Nancy. Our school is so big.",'我是南希。我们学校真大呀。'],
+      ['Yang Ling','I can show you around.','我可以带你四处参观一下。'],
+      ['Nancy',"Thanks. You're so kind.",'谢谢。你真好。'],
+      ['Yang Ling',"Let's go to the art room first. It's on the first floor too.",'我们先去美术室吧。它也在一楼。'],
+      ['Nancy','Great.','太好了。'],
+      ['Nancy','Are there any computer rooms in our school?','我们学校有机房吗？'],
+      ['Yang Ling',"Yes, there are. They're on the third floor. We can go there later. The music room is on the third floor too.",'有呀。它们在三楼，我们可以等会儿再去。音乐室也在三楼。'],
+      ['Nancy','Is there a piano?','那里有钢琴吗？'],
+      ['Yang Ling','Yes, there is.','有呀。'],
+      ['Yang Ling','Our classrooms are here on the second floor.','我们的教室就在二楼这里。'],
+      ['Nancy','Right. Thank you for showing me around.','好的。谢谢你带我四处参观。'],
+      ['Yang Ling',"You're welcome.",'别客气。']
+    ]}
+  },
+  { n:3, emoji:'🚦', title:'Road safety', cn:'道路安全',
+    words:[
+      ['road','/rəʊd/','道路，公路'],['safety','/ˈseɪfti/','安全，平安'],
+      ['bus','/bʌs/','公共汽车，巴士'],['traffic light','/ˈtræfɪk laɪt/','交通信号灯'],
+      ['take','/teɪk/','乘坐，搭乘'],['busy','/ˈbɪzi/','人来车往的；忙碌的'],
+      ['stay','/steɪ/','保持'],['close','/kləʊz/','接近，靠近'],
+      ['cross','/krɒs/','穿过，横过'],['stop','/stɒp/','停止，停下'],
+      ['wait','/weɪt/','等候，等待'],['left','/left/','向左边'],
+      ['right','/raɪt/','向右边'],['safe','/seɪf/','安全的']
+    ],
+    phrases:[
+      ['cross the road','过马路'],['traffic light','交通信号灯'],
+      ['wait for ...','等候……'],['red light','红灯'],['green light','绿灯'],
+      ['look left and right','左右看一看'],['on the road','在马路上'],
+      ['keep safe','保证安全'],["Don't run on the road!",'别在马路上跑！'],
+      ['We can go now.','我们现在可以走了。']
+    ],
+    story:{t:'Cross the road（过马路）',lines:[
+      ['Haohao',"Mum, let's cross the road.",'妈妈，咱们过马路吧。'],
+      ['Mum',"Stop, Haohao! The traffic light is red. We can't cross the road now. Wait for the green traffic light.",'等等，浩浩！红灯亮了，现在不能过马路。等绿灯亮了再走。'],
+      ['Haohao',"I'm sorry.",'对不起。'],
+      ['Haohao','Mum, the traffic light is green. We can go now.','妈妈，绿灯亮了，我们现在可以走了。'],
+      ['Liu Tao','Wait. Look left and right first.','等等。先左右看看。'],
+      ['Haohao',"It's safe now. We can cross the road.",'现在安全了，我们可以过马路了。'],
+      ['Mum',"That's right, Taotao.",'说得对，涛涛。'],
+      ['Haohao',"That's our bus.",'那是我们的公共汽车。'],
+      ['Mum',"Haohao, don't run on the road! It's not safe.",'浩浩，别在马路上跑！这不安全。']
+    ]}
+  },
+  { n:4, emoji:'❤️', title:'Caring about others', cn:'关心他人',
+    words:[
+      ['care about','/keə(r) əˈbaʊt/','关心，关怀'],['hungry','/ˈhʌŋɡri/','感到饿的'],
+      ['thirsty','/ˈθɜːsti/','渴的，口渴的'],['ill','/ɪl/','不舒服，有病的'],
+      ['tired','/ˈtaɪəd/','疲倦的，疲劳的'],['hot','/hɒt/','觉得闷热的'],
+      ['water','/ˈwɔːtə(r)/','水'],['home','/həʊm/','到家，在家'],
+      ['bag','/bæɡ/','包，袋'],['bread','/bred/','面包'],
+      ['dear','/dɪə(r)/','亲爱的']
+    ],
+    phrases:[
+      ['care about','关心，关怀'],["What's the matter?",'怎么了？'],
+      ['have a rest','休息一下'],['set the table','摆放餐具'],
+      ['take care of','照顾，照料'],['Would you like some bread?','你想吃些面包吗？'],
+      ["Here's some water.",'给你水。'],['take your coat','拿你的外套'],
+      ['take your bag','拿你的包'],["I'm thirsty.",'我渴了。']
+    ],
+    story:{t:"What's the matter, Mum?（妈妈，怎么了？）",lines:[
+      ['Mum',"Hi, I'm home!",'嗨，我回来了！'],
+      ['Su Hai',"Hi, Mum! Let me take your coat.",'嗨，妈妈！让我来帮你拿外套。'],
+      ['Su Yang','I can take your bag, Mum.','妈妈，我来帮你拿包。'],
+      ['Su Yang',"What's the matter, Mum?",'妈妈，怎么了？'],
+      ['Mum',"I'm tired.",'我累了。'],
+      ['Su Hai','Have a rest, Mum.','妈妈，休息一下吧。'],
+      ['Su Yang','Are you hungry, Mum? Would you like some bread?','妈妈，你饿吗？想吃点面包吗？'],
+      ['Mum',"No, thanks. I'm not hungry. I'm thirsty.",'不了，谢谢。我不饿，我渴了。'],
+      ['Su Hai',"Here's some water.",'给你水。'],
+      ['Mum','Thank you, dear.','谢谢你，亲爱的。'],
+      ['Dad',"It's six thirty. It's time for dinner!",'六点半了，该吃晚饭了！'],
+      ['Su Yang',"Great! Let's set the table, Su Hai.",'太好了！苏海，我们摆餐具吧。'],
+      ['Su Hai','OK.','好的。']
+    ]}
+  },
+  { n:5, emoji:'🍜', title:'Eating out', cn:'外出就餐',
+    words:[
+      ['eat out','','去饭店吃饭'],['fried rice','/fraɪd raɪs/','炒饭'],
+      ['spring roll','/ˌsprɪŋ ˈrəʊl/','春卷'],['noodle','/ˈnuːdl/','面条（常用复数noodles）'],
+      ['tea','/tiː/','茶'],['juice','/dʒuːs/','果汁'],
+      ['menu','/ˈmenjuː/','菜单'],['fish and chips','/ˌfɪʃ ən ˈtʃɪps/','炸鱼薯条'],
+      ['sandwich','/ˈsænwɪtʃ/','三明治'],['hot dog','/ˈhɒt dɒɡ/','热狗'],
+      ['delicious','/dɪˈlɪʃəs/','美味的，可口的'],['food','/fuːd/','食物，食品'],
+      ['hot pot','/ˈhɒt pɒt/','火锅'],['takeaway box','/ˈteɪkəweɪ bɒks/','打包盒']
+    ],
+    phrases:[
+      ['eat out','去饭店吃饭'],['What would you like?','你想要什么？'],
+      ["I'd like ...",'我想要……'],['Can I help you?','需要帮忙吗？'],
+      ['Anything else?','还要其他东西吗？'],['a glass of orange juice','一杯橙汁'],
+      ['a cup of tea','一杯茶'],['next time','下次'],
+      ['two takeaway boxes','两个打包盒'],["It's delicious.",'真美味。']
+    ],
+    story:{t:'In a Chinese restaurant（在一家中餐馆里）',lines:[
+      ['Dad','What would you like, boys?','孩子们，你们想吃点什么？'],
+      ['Mike',"I'd like some jiaozi.",'我想要些饺子。'],
+      ['Wang Bing',"I'd like some noodles.",'我想要些面条。'],
+      ['Wang Bing',"What would you like, Dad?",'爸爸，你想吃点什么？'],
+      ['Dad',"I'd like some fried rice and spring rolls.",'我想要些炒饭和春卷。'],
+      ['Wang Bing',"I'd like some spring rolls too. We can share them.",'我也想要些春卷，我们可以分着吃。'],
+      ['Waiter','Can I help you?','需要帮忙吗？'],
+      ['Dad',"Yes. We'd like noodles, jiaozi, fried rice and spring rolls, please.",'是的。我们想要面条、饺子、炒饭和春卷。'],
+      ['Waiter','OK. Anything else?','好的。还要其他东西吗？'],
+      ['Dad','Two glasses of orange juice and a cup of tea, please.','麻烦来两杯橙汁和一杯茶。'],
+      ['Mike',"It's delicious. I love Chinese food!",'真美味！我爱吃中餐！'],
+      ['Dad',"Great! Next time, let's try hot pot. It's Sichuan food.",'太棒了！下次我们试试火锅吧，那是四川菜。'],
+      ['Dad','Two takeaway boxes, please!','麻烦来两个打包盒！'],
+      ['Waiter','OK!','好的！']
+    ]}
+  },
+  { n:6, emoji:'👮', title:'Jobs', cn:'职业',
+    words:[
+      ['job','/dʒɒb/','工作，职业'],['driver','/ˈdraɪvə(r)/','驾驶员，司机'],
+      ['nurse','/nɜːs/','护士'],['worker','/ˈwɜːkə(r)/','工人'],
+      ['teacher','/ˈtiːtʃə(r)/','教师'],['doctor','/ˈdɒktə(r)/','医生'],
+      ['farmer','/ˈfɑːmə(r)/','农民'],['cook','/kʊk/','厨师；烹饪，烹调'],
+      ['police officer','/pəˈliːs ɒfɪsə(r)/','警察'],['hospital','/ˈhɒspɪtl/','医院'],
+      ['parent','/ˈpeərənt/','父亲，母亲'],['work','/wɜːk/','工作'],
+      ['sick','/sɪk/','生病的，有病的'],['people','/ˈpiːpl/','人，人们'],
+      ['taxi','/ˈtæksi/','出租汽车，的士'],['train','/treɪn/','火车'],
+      ['place','/pleɪs/','地方'],['way','/weɪ/','方法，方式']
+    ],
+    phrases:[
+      ["What's your father's job?",'你爸爸的职业是什么？'],['taxi driver','出租车司机'],
+      ['police officer','警察'],['help sick people','帮助生病的人'],
+      ['keep us safe','保护我们的安全'],['in different ways','用不同的方式'],
+      ['Happy Labour Day!','劳动节快乐！'],['at the hospital','在医院'],
+      ['make delicious food','做美味的食物'],['help children learn','帮助孩子们学习']
+    ],
+    story:{t:'Happy Labour Day!（劳动节快乐！）',lines:[
+      ['Su Hai',"What are your parents' jobs, Liu Tao?",'刘涛，你父母的职业是什么？'],
+      ['Liu Tao','My father is a taxi driver. Drivers take people to different places. My mother is a cook. Cooks make delicious food.','我爸爸是一名出租车司机。司机把人们送到不同的地方。我妈妈是一名厨师。厨师做美味的食物。'],
+      ['Liu Tao',"What's your father's job?",'你爸爸的职业是什么？'],
+      ['Su Hai',"He's a doctor. Doctors help sick people.",'他是一名医生。医生帮助生病的人。'],
+      ['Liu Tao','What about your mother?','你妈妈呢？'],
+      ['Su Hai',"She's a worker. She can make nice sweets.",'她是一名工人。她会制作美味的糖果。'],
+      ['Liu Tao','I love sweets!','我爱吃糖果！'],
+      ['Su Hai',"What's your father's job, Yang Ling?",'杨玲，你爸爸的职业是什么？'],
+      ['Yang Ling',"He's a police officer. Police officers keep us safe.",'他是一名警察。警察保护我们的安全。'],
+      ['Su Hai',"What's your mother's job?",'你妈妈的职业是什么？'],
+      ['Yang Ling',"She's a teacher. Teachers help children learn new things.",'她是一名教师。教师帮助孩子们学习新事物。'],
+      ['','Our parents have great jobs. They help people in different ways. Happy Labour Day! What job would you like to do?','我们的父母有着很伟大的职业，他们以不同的方式帮助人们。劳动节快乐！你想做什么职业？']
+    ]}
+  },
+  { n:7, emoji:'🧹', title:'Doing chores at home', cn:'在家做家务',
+    words:[
+      ['chore','/tʃɔː(r)/','日常事务，家务'],['dish','/dɪʃ/','碗，碟'],
+      ['water','/ˈwɔːtə(r)/','给……浇水'],['house','/haʊs/','房屋，房子'],
+      ['so','/səʊ/','所以'],['half','/hɑːf/','一半，半'],
+      ['past','/pɑːst/','晚于，在……之后'],['weekend','/ˌwiːkˈend/','周末']
+    ],
+    phrases:[
+      ['do chores','做家务'],['cook lunch','做午饭'],
+      ['wash the clothes','洗衣服'],['water the flowers','浇花'],
+      ['make the bed','铺床'],['clean the table','擦桌子'],
+      ['wash the dishes','洗碗'],['feed the cat','喂猫'],
+      ['half past twelve','十二点半'],['Good job!','干得漂亮！'],
+      ['part of the family','家庭的一份子'],['at the weekend','在周末']
+    ],
+    story:{t:'A busy weekend（忙碌的周末）',lines:[
+      ['',"It's Saturday. Mum and Dad are doing chores.",'今天是星期六。妈妈和爸爸正在做家务。'],
+      ['','Mum is cooking lunch. Dad is washing the clothes.','妈妈正在做午饭，爸爸正在洗衣服。'],
+      ['',"Su Yang and I are also doing chores. We're part of the family, so we want to help.",'我和苏洋也在做家务。我们是家庭的一份子，所以想帮忙。'],
+      ['',"Su Yang is watering the flowers. What am I doing? I'm making the bed.",'苏洋正在浇花。我在做什么呢？我正在铺床。'],
+      ['',"It's half past twelve. It's after lunch. Mum is cleaning the table. Su Yang is washing the dishes. I'm feeding our cat.",'十二点半了，午饭过后。妈妈正在擦桌子，苏洋正在洗碗，我正在喂我们家的猫。'],
+      ['',"Our home is clean and nice now. We have a busy weekend, but we all feel happy.",'我们的家现在又干净又漂亮。我们度过了一个忙碌的周末，但都感到很快乐。']
+    ]}
+  },
+  { n:8, emoji:'🍳', title:'In the kitchen', cn:'在厨房里',
+    words:[
+      ['kitchen','/ˈkɪtʃɪn/','厨房'],['milk','/mɪlk/','牛奶'],
+      ['tomato','/təˈmɑːtəʊ/','番茄，西红柿'],['potato','/pəˈteɪtəʊ/','马铃薯，土豆'],
+      ['chicken','/ˈtʃɪkɪn/','鸡肉'],['egg','/eɡ/','鸡蛋'],
+      ['birthday','/ˈbɜːθdeɪ/','生日'],['soup','/suːp/','汤'],
+      ['him','/hɪm/','他（宾格）'],['really','/ˈrɪəli/','十分，非常'],
+      ['cut','/kʌt/','切，割'],['meat','/miːt/','肉'],
+      ['get','/ɡet/','去取，去拿']
+    ],
+    phrases:[
+      ['cook dinner','做晚饭'],['wash the tomatoes','洗西红柿'],
+      ['cut the potatoes','切土豆'],['Kung Pao Chicken','宫保鸡丁'],
+      ['tomato and egg soup','西红柿鸡蛋汤'],['Have some ...','吃点/喝点……吧'],
+      ["I can't wait!",'我等不及了！'],['Happy birthday!','生日快乐！'],
+      ['get a dish','拿个盘子'],['a great cook','一位很棒的厨师']
+    ],
+    story:{t:'A happy dinner（一顿开心的晚餐）',lines:[
+      ['Liu Tao','Are you cooking dinner, Mum?','妈妈，你在做晚饭吗？'],
+      ['Mum',"Yes, I am. I'm cutting the potatoes.",'是的。我正在切土豆。'],
+      ['Liu Tao',"You're busy. Can I help?",'你忙不过来吧，我能帮忙吗？'],
+      ['Mum','Yes. Wash the tomatoes, please.','可以，麻烦你洗一下西红柿。'],
+      ['Liu Tao','OK, Mum.','好的，妈妈。'],
+      ['Liu Tao','Are you cooking meat, Dad?','爸爸，你在炒肉吗？'],
+      ['Dad',"Yes. I'm cooking Kung Pao Chicken.",'是的，我在做宫保鸡丁。'],
+      ['Liu Tao',"Great! I can't wait! Let me get a dish for you.",'太棒了！我都等不及了！我帮你拿个盘子。'],
+      ['Dad','Thank you, Taotao.','谢谢你，涛涛。'],
+      ['Dad',"How's the chicken, Taotao?",'涛涛，鸡肉怎么样？'],
+      ['Liu Tao',"It's delicious, Dad. You're a great cook!",'太好吃了，爸爸。你真是个很棒的厨师！'],
+      ['Mum','How are the potatoes, Haohao?','浩浩，土豆怎么样？'],
+      ['Haohao',"They're nice. I love potatoes!",'很不错，我爱吃土豆！'],
+      ['Liu Tao','Have some tomato and egg soup, Dad and Mum.','爸爸妈妈，喝点西红柿鸡蛋汤吧。']
+    ]}
+  }
+]}
+]};
+
+/* ================= 状态与工具 ================= */
+const $app=document.getElementById('app');
+const ACCENT={'4a':['#4f7cff','#6a5af9'],'4b':['#ff9f43','#ee5d6c']};
+const AV_COLORS=['#4f7cff','#22b071','#ee5d6c','#8e5af7','#f0932b','#16a2c8','#e0568a','#5f9d32'];
+const AV_EMOJI={'':'📖'};
+let settings=JSON.parse(localStorage.getItem('yl4_settings')||'{}');
+settings=Object.assign({rate:0.85,auto:true,zh:true},settings);
+let stars=JSON.parse(localStorage.getItem('yl4_stars')||'{}');
+function saveSettings(){localStorage.setItem('yl4_settings',JSON.stringify(settings))}
+function saveStars(){localStorage.setItem('yl4_stars',JSON.stringify(stars))}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function getBook(id){return DATA.books.find(b=>b.id===id)}
+function wordKey(bid,u,w){return bid+'-'+u+'-'+w[0].toLowerCase()}
+
+/* ================= 语音合成 ================= */
+let voices=[];
+function loadVoices(){voices=speechSynthesis.getVoices()}
+loadVoices();
+if('onvoiceschanged' in speechSynthesis) speechSynthesis.onvoiceschanged=loadVoices;
+function pickVoice(){
+  const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));
+  if(!vs.length)return null;
+  const pref=vs.find(v=>/en-US/i.test(v.lang)&&/female|samantha|zira|aria|jenny/i.test(v.name))
+          ||vs.find(v=>/en-US/i.test(v.lang))||vs.find(v=>/en-GB/i.test(v.lang))||vs[0];
+  return pref;
+}
+let speakingLineIdx=-1, autoTimer=null, autoReading=false, audioEl=null;
+function audioKey(t){let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h.toString(16).padStart(8,'0')}
+function stopAudioEl(){if(audioEl){audioEl.onended=audioEl.onerror=null;audioEl.pause();audioEl=null}}
+function speak(text,opts){
+  opts=opts||{};
+  speechSynthesis.cancel();stopAudioEl();
+  const done=()=>opts.onend&&opts.onend();
+  // 优先播放本地真人发音 audio/<key>.mp3，缺失时回退系统语音合成
+  try{
+    const a=new Audio('audio/'+audioKey(text)+'.mp3');
+    a.playbackRate=Math.min(1.6,Math.max(0.5,opts.rate||settings.rate));
+    if('preservesPitch' in a)a.preservesPitch=true;
+    audioEl=a;let fell=false;
+    const fallback=()=>{if(fell)return;fell=true;if(audioEl===a)audioEl=null;ttsSpeak(text,opts)};
+    a.onended=done;a.onerror=fallback;
+    const p=a.play();
+    if(p&&p.catch)p.catch(fallback);
+  }catch(e){ttsSpeak(text,opts)}
+}
+function ttsSpeak(text,opts){
+  try{
+    const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,''));
+    u.lang='en-US'; u.rate=opts.rate||settings.rate;
+    const v=pickVoice(); if(v)u.voice=v;
+    u.onend=()=>{opts.onend&&opts.onend()};
+    u.onerror=()=>{opts.onend&&opts.onend()};
+    speechSynthesis.speak(u);
+    speechSynthesis.resume&&speechSynthesis.resume();
+  }catch(e){opts.onend&&opts.onend()}
+}
+function stopSpeak(){autoReading=false;speakingLineIdx=-1;clearTimeout(autoTimer);stopAudioEl();speechSynthesis.cancel();document.querySelectorAll('.sline.reading').forEach(el=>el.classList.remove('reading'))}
+
+/* ================= 路由 ================= */
+function hashParts(){return location.hash.replace(/^#\/?/,'').split('/').filter(Boolean)}
+function go(h){if(location.hash==='#'+h)route();else location.hash='#'+h}
+window.addEventListener('hashchange',route);
+function route(){
+  stopSpeak();
+  const p=hashParts();
+  if(!p[0])return renderHome();
+  if(p[0]==='book'&&p[1])return renderUnits(p[1]);
+  if(p[0]==='unit'&&p[1]&&p[2])return renderUnit(p[1],+p[2],p[3]||'words');
+  renderHome();
+}
+
+/* ================= 渲染：首页 ================= */
+function renderHome(){
+  $app.innerHTML=`
+    <div class="topbar"><h1>译林英语 · 四年级</h1></div>
+    <div class="hero">
+      <div class="logo">🎓</div>
+      <h2>译林版小学英语 · 四年级</h2>
+      <p>单词 · 词组 · 课文点读 · 趣味测验　完全离线可用</p>
+    </div>
+    <div class="book-grid">
+      ${DATA.books.map(b=>`
+        <button class="book-card ${b.cls}" onclick="go('/book/${b.id}')">
+          <div class="emoji">${b.emoji}</div>
+          <div>
+            <div class="tag">YILIN EDITION</div>
+            <h3>${b.name}</h3>
+            <p>${b.en} · 8 个单元</p>
+          </div>
+        </button>`).join('')}
+    </div>
+    <p class="foot-note">内容依据译林版（三年级起点）<b>2025秋四上 / 2026春四下</b>新教材整理<br>英文发音由设备内置语音引擎合成，无需联网</p>`;
+}
+
+/* ================= 渲染：单元列表 ================= */
+function renderUnits(bid){
+  const b=getBook(bid);if(!b)return renderHome();
+  $app.innerHTML=`
+    <div class="topbar">
+      <button class="icon-btn" onclick="go('/home')">‹</button>
+      <h1>${b.name}<small>${b.en}</small></h1>
+    </div>
+    <div class="section-title">选择单元（共 ${b.units.length} 个单元）</div>
+    <div class="unit-grid">
+      ${b.units.map(u=>`
+        <button class="unit-card" style="border-color:${ACCENT[bid][0]}" onclick="go('/unit/${bid}/${u.n}/words')">
+          <span class="u-emoji" style="background:${ACCENT[bid][0]}1a">${u.emoji}</span>
+          <span style="min-width:0">
+            <span class="u-no">UNIT ${u.n}</span>
+            <span class="u-en" style="display:block">${u.title}</span>
+            <span class="u-cn">${u.cn}</span>
+          </span>
+          <span class="u-go">›</span>
+        </button>`).join('')}
+    </div>`;
+}
+
+/* ================= 渲染：单元学习页 ================= */
+let cardIdx=0, cardMode='card';
+function renderUnit(bid,un,tab){
+  const b=getBook(bid);if(!b)return renderHome();
+  const u=b.units.find(x=>x.n===un);if(!u)return renderUnits(bid);
+  document.documentElement.style.setProperty('--accent',ACCENT[bid][0]);
+  document.documentElement.style.setProperty('--accent2',ACCENT[bid][1]);
+  if(cardIdx>=u.words.length)cardIdx=0;
+  $app.innerHTML=`
+    <div class="topbar">
+      <button class="icon-btn" onclick="go('/book/${bid}')">‹</button>
+      <h1>Unit ${u.n} ${u.title}<small>${b.name} · ${u.cn}</small></h1>
+      <button class="icon-btn" onclick="go('/home')" title="首页">🏠</button>
+    </div>
+    <div class="unit-banner">
+      <div class="n">UNIT ${u.n}</div>
+      <h3>${u.emoji} ${u.title}</h3>
+      <p>${u.cn}</p>
+    </div>
+    <div class="tabs">
+      <button class="tab ${tab==='words'?'on':''}" onclick="go('/unit/${bid}/${un}/words')"><span class="t-emoji">🔤</span>单词</button>
+      <button class="tab ${tab==='phrases'?'on':''}" onclick="go('/unit/${bid}/${un}/phrases')"><span class="t-emoji">📝</span>词组</button>
+      <button class="tab ${tab==='story'?'on':''}" onclick="go('/unit/${bid}/${un}/story')"><span class="t-emoji">📖</span>课文</button>
+      <button class="tab ${tab==='quiz'?'on':''}" onclick="go('/unit/${bid}/${un}/quiz')"><span class="t-emoji">🎯</span>闯关</button>
+    </div>
+    <div id="panel-words" class="panel ${tab==='words'?'on':''}"></div>
+    <div id="panel-phrases" class="panel ${tab==='phrases'?'on':''}"></div>
+    <div id="panel-story" class="panel ${tab==='story'?'on':''} ${settings.zh?'show-zh':''}"></div>
+    <div id="panel-quiz" class="panel ${tab==='quiz'?'on':''}"></div>`;
+  if(tab==='words')renderWords(bid,u);
+  if(tab==='phrases')renderPhrases(u);
+  if(tab==='story')renderStory(u);
+  if(tab==='quiz')renderQuizHome(bid,u);
+}
+
+/* ---------- 单词 ---------- */
+function renderWords(bid,u){
+  const el=document.getElementById('panel-words');
+  el.innerHTML=`
+    <div class="cmode">
+      <button class="${cardMode==='card'?'on':''}" onclick="setCardMode('card')">🃏 卡片</button>
+      <button class="${cardMode==='list'?'on':''}" onclick="setCardMode('list')">📋 词表</button>
+    </div>
+    <div id="words-body"></div>`;
+  drawWordsBody(bid,u);
+}
+function setCardMode(m){cardMode=m;const b=getBook(hashParts()[1]);const u=b.units.find(x=>x.n===+hashParts()[2]);drawWordsBody(b.id,u)}
+function drawWordsBody(bid,u){
+  const body=document.getElementById('words-body');
+  if(cardMode==='list'){
+    body.innerHTML=`<div class="wlist">${u.words.map((w,i)=>{
+      const k=wordKey(bid,u.n,w),on=stars[k];
+      return `<div class="wrow">
+        <span class="st ${on?'on':''}" onclick="toggleStar('${k}',event)">★</span>
+        <span class="txt" onclick="speak('${esc(w[0]).replace(/'/g,"\\'")}')">
+          <span class="en">${esc(w[0])}<span class="ipa">${w[1]||''}</span></span>
+          <span class="cn">${esc(w[2])}</span>
+        </span>
+        <button class="sp" onclick="speak('${esc(w[0]).replace(/'/g,"\\'")}')">🔊</button>
+      </div>`}).join('')}</div>`;
+  }else{
+    const w=u.words[cardIdx],k=wordKey(bid,u.n,w);
+    body.innerHTML=`
+      <div class="card-progress">第 ${cardIdx+1} / ${u.words.length} 个</div>
+      <div class="card-stage" style="margin-top:12px">
+        <div class="flash" id="flash">
+          <button class="star-btn ${stars[k]?'on':''}" onclick="toggleStar('${k}',event)">★</button>
+          <div class="face front">
+            <div class="w-en">${esc(w[0])}</div>
+            <div class="w-ipa">${w[1]||'&nbsp;'}</div>
+            <button class="speak-big" onclick="speak('${esc(w[0]).replace(/'/g,"\\'")}')">🔊</button>
+            <div class="w-hint">轻触卡片看中文</div>
+          </div>
+          <div class="face back">
+            <div class="w-cn">${esc(w[2])}<small>${esc(w[0])}</small></div>
+            <button class="speak-big" onclick="speak('${esc(w[0]).replace(/'/g,"\\'")}')">🔊</button>
+            <div class="w-hint">轻触卡片返回</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-bar">
+        <button class="navbtn" onclick="moveCard(-1)">‹</button>
+        <button class="navbtn main" onclick="speak('${esc(w[0]).replace(/'/g,"\\'")}')">🔊</button>
+        <button class="navbtn" onclick="moveCard(1)">›</button>
+      </div>`;
+    const fl=document.getElementById('flash');
+    fl.onclick=(e)=>{if(e.target.closest('button'))return;fl.classList.toggle('flick')};
+    if(settings.auto)setTimeout(()=>speak(w[0]),120);
+  }
+}
+function moveCard(d){
+  const p=hashParts(),bid=p[1],un=+p[2],u=getBook(bid).units.find(x=>x.n===un);
+  cardIdx=(cardIdx+d+u.words.length)%u.words.length;
+  drawWordsBody(bid,u);
+}
+function toggleStar(k,e){
+  e&&e.stopPropagation();
+  stars[k]=!stars[k];if(!stars[k])delete stars[k];saveStars();
+  const el=e&&e.currentTarget;
+  if(el)el.classList.toggle('on',!!stars[k]);
+}
+
+/* ---------- 词组 ---------- */
+function renderPhrases(u){
+  const el=document.getElementById('panel-phrases');
+  el.innerHTML=`<div class="wlist">${u.phrases.map(p=>`
+    <div class="wrow">
+      <span class="txt" onclick="speak(this.dataset.e)" data-e="${esc(p[0])}">
+        <span class="en" style="font-size:18px">${esc(p[0])}</span>
+        <span class="cn">${esc(p[1])}</span>
+      </span>
+      <button class="sp" onclick="speak(this.dataset.e)" data-e="${esc(p[0])}">🔊</button>
+    </div>`).join('')}</div>
+    <p class="foot-note" style="margin-top:14px">轻点任一词组即可听发音</p>`;
+}
+
+/* ---------- 课文 ---------- */
+function avColor(name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;return AV_COLORS[h%AV_COLORS.length]}
+function avText(name){if(!name)return'旁白';const t=name==="Yang Ling's mum"?'M':name[0];return t.toUpperCase()}
+function renderStory(u){
+  const el=document.getElementById('panel-story');
+  el.innerHTML=`
+    <div class="story-ctrl">
+      <button class="btn primary" id="btn-auto" onclick="toggleAuto()">▶️ 播放全文</button>
+      <button class="btn" onclick="stopSpeak();updateAutoBtn()">⏹️ 停止</button>
+      <button class="btn toggle ${settings.zh?'on':''}" id="btn-zh" onclick="toggleZh()">🇨🇳 中文</button>
+      <button class="btn toggle on" onclick="cycleRate()" id="btn-rate">🐢 ${rateLabel()}</button>
+    </div>
+    <div class="story-title">${esc(u.story.t)}</div>
+    ${u.story.lines.map((l,i)=>`
+      <div class="sline ${l[0]?'':'narr'}" id="sline-${i}" onclick="tapLine(${i})">
+        <div class="avatar" style="background:${l[0]?avColor(l[0]):'#b7c0d0'}">${l[0]?esc(avText(l[0])):'📖'}</div>
+        <div class="sbubble">
+          ${l[0]?`<div style="font-size:12.5px;font-weight:800;color:${avColor(l[0])};margin-bottom:3px">${esc(l[0])}</div>`:''}
+          <div class="en">${esc(l[1])}<span class="speaking-ico">🔊</span></div>
+          <div class="zh">${esc(l[2])}</div>
+        </div>
+      </div>`).join('')}`;
+}
+function rateLabel(){return settings.rate<=0.7?'慢速':(settings.rate<=1?'标准':'快速')}
+function cycleRate(){
+  const rs=[0.6,0.9,1.25];
+  let i=rs.indexOf(settings.rate);if(i<0)i=1;
+  settings.rate=rs[(i+1)%rs.length];saveSettings();
+  document.getElementById('btn-rate').innerHTML='🐢 '+rateLabel();
+  if(speakingLineIdx>=0){ // 正在播报课文：立即以新语速重读当前句
+    utterGen++;
+    clearTimeout(autoTimer);
+    const p=hashParts(),u=getBook(p[1]).units.find(x=>x.n===+p[2]);
+    const line=speakingLineIdx;
+    setTimeout(()=>{if(speakingLineIdx===line)speakLine(u,line)},120);
+  }
+}
+function toggleZh(){settings.zh=!settings.zh;saveSettings();document.getElementById('panel-story').classList.toggle('show-zh',settings.zh);document.getElementById('btn-zh').classList.toggle('on',settings.zh)}
+function tapLine(i){
+  const p=hashParts(),u=getBook(p[1]).units.find(x=>x.n===+p[2]);
+  stopAuto();
+  speakLine(u,i);
+}
+function highlightLine(i){
+  document.querySelectorAll('.sline.reading').forEach(e=>e.classList.remove('reading'));
+  speakingLineIdx=i;
+  const el=document.getElementById('sline-'+i);
+  if(el){el.classList.add('reading');el.scrollIntoView({behavior:'smooth',block:'center'})}
+}
+function stopAuto(){autoReading=false;clearTimeout(autoTimer);updateAutoBtn()}
+function updateAutoBtn(){const b=document.getElementById('btn-auto');if(b)b.innerHTML=autoReading?'⏸️ 暂停播放':'▶️ 播放全文'}
+function toggleAuto(){
+  if(autoReading){ // 暂停：保留当前句子位置
+    autoReading=false;clearTimeout(autoTimer);speechSynthesis.cancel();updateAutoBtn();return;
+  }
+  const p=hashParts(),u=getBook(p[1]).units.find(x=>x.n===+p[2]);
+  autoReading=true;updateAutoBtn();
+  readStory(u,speakingLineIdx>=0?speakingLineIdx:0);
+}
+function backQuizHome(){const q=quizState;if(q)renderQuizHome(q.bid,q.u)}
+let utterGen=0;
+function speakLine(u,i){
+  const gen=++utterGen;
+  highlightLine(i);
+  speak(u.story.lines[i][1],{onend:()=>{
+    if(gen!==utterGen)return; // 已被新操作取代（如切换语速重读）
+    if(speakingLineIdx===i&&!autoReading){document.getElementById('sline-'+i)?.classList.remove('reading');speakingLineIdx=-1}
+    if(autoReading)autoTimer=setTimeout(()=>readStory(u,i+1),350)
+  }});
+}
+function readStory(u,i){
+  if(!autoReading)return;
+  if(i>=u.story.lines.length){stopSpeak();stopAuto();return}
+  speakLine(u,i);
+}
+
+/* ---------- 闯关（单词 / 词组 / 句子） ---------- */
+const KINDS={
+  word:{emoji:'🔤',name:'单词挑战',size:10,label:'单词',descs:['显示中文意思，选出正确的英文单词','显示英文单词，选出正确的中文意思','听发音，选出你听到的单词'],tab:'words',rev:'🔤 去复习单词'},
+  phrase:{emoji:'📝',name:'词组挑战',size:8,label:'词组',descs:['显示中文意思，选出正确的英文词组','显示英文词组，选出正确的中文意思','听发音，选出你听到的词组'],tab:'phrases',rev:'📝 去复习词组'},
+  sent:{emoji:'📖',name:'句子挑战',size:8,label:'句子',descs:['显示中文句意，选出正确的英文句子','显示英文句子，选出正确的中文意思','听发音，选出你听到的句子'],tab:'story',rev:'📖 去读课文'}
+};
+function quizPool(u,k){
+  let p;
+  if(k==='phrase')p=u.phrases.map(x=>({en:x[0],zh:x[1]}));
+  else if(k==='sent')p=u.story.lines.map(x=>({en:x[1],zh:x[2],who:x[0]}));
+  else p=u.words.map(x=>({en:x[0],zh:x[2],ipa:x[1]}));
+  const seen=new Set();
+  return p.filter(x=>!seen.has(x.en)&&seen.add(x.en));
+}
+let quizState=null;
+function renderQuizHome(bid,u){
+  const el=document.getElementById('panel-quiz');
+  el.innerHTML=`<div class="quiz-home">
+    <div class="q-emoji">🎯</div>
+    <h3 style="margin-top:8px">闯关大挑战</h3>
+    <p style="color:var(--sub);font-size:14.5px">单词、词组、句子都能练，答错的单词会自动加入 ⭐ 重点</p>
+    ${['word','phrase','sent'].map(k=>{
+      const K=KINDS[k],n=Math.min(K.size,quizPool(u,k).length);
+      return `<div class="qsec">${K.emoji} ${K.name}<small>${n} 题</small></div>
+      <div class="quiz-modes">
+        <button class="qmode" onclick="startQuiz('ec','${k}')"><span class="qe">🇨🇳</span><span><b>看中文 · 选英文</b><small>${K.descs[0]}</small></span></button>
+        <button class="qmode" onclick="startQuiz('ce','${k}')"><span class="qe">🔤</span><span><b>看英文 · 选中文</b><small>${K.descs[1]}</small></span></button>
+        <button class="qmode" onclick="startQuiz('listen','${k}')"><span class="qe">🔊</span><span><b>听音 · 选答案</b><small>${K.descs[2]}</small></span></button>
+      </div>`}).join('')}
+  </div>`;
+}
+function startQuiz(mode,kind){
+  const p=hashParts(),bid=p[1],un=+p[2],u=getBook(bid).units.find(x=>x.n===un);
+  const pool=quizPool(u,kind);
+  const picks=shuffle(pool).slice(0,Math.min(KINDS[kind].size,pool.length));
+  quizState={bid,u,mode,kind,qs:picks.map(it=>({it,ans:null})),idx:0,score:0,locked:false};
+  drawQuiz();
+}
+function drawQuiz(){
+  const q=quizState;if(!q)return;
+  const el=document.getElementById('panel-quiz');
+  if(q.idx>=q.qs.length)return drawQuizResult();
+  const item=q.qs[q.idx].it;
+  const others=shuffle(quizPool(q.u,q.kind).filter(x=>x.en!==item.en)).slice(0,3);
+  const opts=shuffle([item,...others]);
+  let head='';
+  if(q.mode==='listen'){
+    head=`<button class="qreplay" onclick="replayQ()">🔊</button>
+      <div style="text-align:center;color:var(--sub);font-size:15px;margin-bottom:10px">仔细听，选出你听到的${KINDS[q.kind].label}</div>`;
+  }else if(q.mode==='ec'){
+    head=`<div class="qprompt">${esc(item.zh)}</div>`;
+  }else{
+    head=`<div class="qprompt">${esc(item.en)}</div>`;
+    if(item.ipa)head+=`<div class="qprompt-ipa">${item.ipa}</div>`;
+    else if(item.who)head+=`<div class="qprompt-ipa">— ${esc(item.who)}</div>`;
+  }
+  el.innerHTML=`
+    <div class="qcard ${q.kind==='sent'?'sent':q.kind==='phrase'?'phr':''}">
+      <div class="qprog"><i style="width:${q.idx/q.qs.length*100}%"></i></div>
+      <div class="qmeta">第 ${q.idx+1} 题 / 共 ${q.qs.length} 题　已答对 ${q.score} 题</div>
+      ${head}
+      <div class="opts">
+        ${opts.map((o,i)=>`<button class="opt" data-c="${o.en===item.en?1:0}" onclick="pickOpt(this)">
+          <span class="key">${'ABCD'[i]}</span><span>${esc(q.mode==='ce'?o.zh:o.en)}${q.mode!=='ce'&&o.ipa?` <span style="font-size:13px;color:var(--sub);font-family:Georgia,serif">${o.ipa}</span>`:''}</span></button>`).join('')}
+      </div>
+      <div class="qfeedback" id="qfeedback"></div>
+      <button class="btn primary qnext hidden" id="qnext" onclick="nextQuiz()">下一题 ›</button>
+    </div>`;
+  if(q.mode==='listen')setTimeout(()=>speak(item.en),250);
+}
+function replayQ(){const q=quizState;if(q)speak(q.qs[q.idx].it.en)}
+let pickedBtn=null;
+function pickOpt(btn){
+  const q=quizState;if(q.locked)return;
+  pickedBtn=btn;
+  document.querySelectorAll('.opt.picked').forEach(o=>o.classList.remove('picked'));
+  btn.classList.add('picked');
+  document.getElementById('qm-choice').textContent=btn.querySelector('span:last-child').textContent.trim();
+  document.getElementById('qmodal').classList.add('show');
+}
+function cancelPick(){
+  document.getElementById('qmodal').classList.remove('show');
+  if(pickedBtn)pickedBtn.classList.remove('picked');
+  pickedBtn=null;
+}
+function confirmPick(){
+  document.getElementById('qmodal').classList.remove('show');
+  const b=pickedBtn;pickedBtn=null;
+  if(!b)return;
+  b.classList.remove('picked');
+  answerQuiz(b);
+}
+function answerQuiz(btn){
+  const q=quizState;if(q.locked)return;q.locked=true;
+  const correct=btn.dataset.c==='1';
+  document.querySelectorAll('.opt').forEach(o=>{
+    o.setAttribute('disabled','');
+    if(o.dataset.c==='1')o.classList.add('correct');
+    else o.classList.add('dim');
+  });
+  if(!correct){btn.classList.remove('dim');btn.classList.add('wrong')}
+  if(correct)q.score++;
+  const cur=q.qs[q.idx];cur.ans=correct;
+  // 单词题：答错加入重点（实心黄星）；词组/句子不标星
+  if(q.kind==='word'&&!correct){stars[wordKey(q.bid,q.u.n,[cur.it.en])]=true;saveStars()}
+  const fb=document.getElementById('qfeedback');
+  fb.className='qfeedback '+(correct?'ok':'bad');
+  fb.innerHTML=correct?'✅ 答对了！真棒':`❌ 正确答案：<b>${esc(cur.it.en)}</b>　${esc(cur.it.zh)}`;
+  const nb=document.getElementById('qnext');nb.classList.remove('hidden');
+  nb.textContent=q.idx+1>=q.qs.length?'查看成绩 🏁':'下一题 ›';
+}
+function nextQuiz(){quizState.idx++;quizState.locked=false;drawQuiz()}
+function drawQuizResult(){
+  const q=quizState,total=q.qs.length,K=KINDS[q.kind];
+  const rate=q.score/total;
+  const emoji=rate===1?'🏆':rate>=0.8?'🎉':rate>=0.6?'👍':'💪';
+  const word=rate===1?'满分！太厉害啦':rate>=0.8?'优秀，继续保持':rate>=0.6?'不错，再练一练':'别灰心，多读几遍';
+  const tip=q.kind==='word'?'答错的单词已自动加入 ⭐ 重点标记，可在单词表中复习':q.kind==='phrase'?'答错的词组可以到「词组」页再读一读':'答错的句子可以到「课文」页再听一听';
+  document.getElementById('panel-quiz').innerHTML=`
+    <div class="qcard"><div class="qresult">
+      <div style="font-size:56px">${emoji}</div>
+      <div class="big-score">${q.score}<span style="font-size:26px;color:var(--sub)"> / ${total}</span></div>
+      <p>${word}<br>${tip}</p>
+      <div class="btns">
+        <button class="btn primary" onclick="startQuiz('${q.mode}','${q.kind}')">🔁 再来一组</button>
+        <button class="btn" onclick="backQuizHome()">🎯 换个玩法</button>
+        <button class="btn" onclick="go('/unit/${q.bid}/${q.u.n}/${K.tab}')">${K.rev}</button>
+      </div>
+    </div></div>`;
+}
+
+/* ================= 启动 ================= */
+if(!location.hash)location.hash='#/home';else route();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(e=>console.log('SW reg fail',e)));
+}
+</script>
+</body>
+</html>
