@@ -63,6 +63,25 @@ button{font-family:inherit;font-size:inherit;color:inherit;border:none;backgroun
 .book-card p{font-size:13px;opacity:.92}
 .foot-note{text-align:center;color:#9aa4b4;font-size:12.5px;padding:8px 24px 0}
 .foot-note b{color:var(--sub)}
+.study-sum{margin:16px 18px 0;background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:16px 16px 12px}
+.study-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.study-head h3{font-size:16px;font-weight:800}
+.study-live{font-size:12px;font-weight:700;color:var(--sub);background:#eef1f6;border-radius:99px;padding:3px 10px}
+.study-live.on{color:#177a4f;background:var(--ok-soft)}
+.study-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.study-kpi{border-radius:16px;padding:14px 14px 12px;background:var(--accent-soft)}
+.study-kpi.total{background:var(--ok-soft)}
+.study-kpi .lab{font-size:13px;color:var(--sub);font-weight:700}
+.study-kpi .num{font-size:24px;font-weight:900;margin-top:4px;color:var(--accent);line-height:1.2}
+.study-kpi.total .num{color:#177a4f}
+.study-kpi .meta{font-size:12px;color:var(--sub);margin-top:3px}
+.study-days-title{margin:14px 2px 8px;font-size:13px;color:var(--sub);font-weight:700}
+.study-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow:auto}
+.study-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 12px;border-radius:12px;background:#f5f7fc;font-size:14.5px}
+.study-row .d{font-weight:700}
+.study-row .t{color:var(--accent);font-weight:800;flex:none}
+.study-row.today{background:var(--accent-soft)}
+.study-empty{color:var(--sub);font-size:13px;padding:2px 2px 6px}
 
 /* ---------- 单元网格 ---------- */
 .section-title{padding:6px 20px 4px;font-size:14px;color:var(--sub);font-weight:600}
@@ -799,6 +818,118 @@ settings=Object.assign({rate:0.85,auto:true,zh:true},settings);
 let stars=JSON.parse(localStorage.getItem('yl4_stars')||'{}');
 function saveSettings(){localStorage.setItem('yl4_settings',JSON.stringify(settings))}
 function saveStars(){localStorage.setItem('yl4_stars',JSON.stringify(stars))}
+
+/* ================= 学习时长 ================= */
+const STUDY_IDLE_MS=5*60*1000;
+let studyTime={days:{}};
+try{
+  const raw=JSON.parse(localStorage.getItem('yl4_time')||'{}');
+  if(raw&&raw.days&&typeof raw.days==='object')studyTime=raw;
+}catch(e){}
+let studyAnchor=0, lastActivity=Date.now(), studyTimer=null;
+function dateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function todayKey(){return dateKey(new Date())}
+function saveStudyTime(){localStorage.setItem('yl4_time',JSON.stringify(studyTime))}
+function fmtDur(sec){
+  sec=Math.max(0,sec|0);
+  const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60;
+  if(h)return h+'小时'+m+'分'+s+'秒';
+  if(m)return m+'分'+s+'秒';
+  return s+'秒';
+}
+function dayLabel(key){
+  if(key===todayKey())return '今天';
+  const y=new Date();y.setHours(0,0,0,0);y.setDate(y.getDate()-1);
+  if(key===dateKey(y))return '昨天';
+  const d=new Date(key+'T00:00:00');
+  const prefix=d.getFullYear()===new Date().getFullYear()?'':d.getFullYear()+'年';
+  return prefix+(d.getMonth()+1)+'月'+d.getDate()+'日';
+}
+function mediaPlaying(){
+  if(autoReading)return true;
+  if(audioEl&&!audioEl.paused)return true;
+  try{if(speechSynthesis.speaking)return true}catch(e){}
+  return false;
+}
+function studyActive(){
+  if(document.hidden)return false;
+  if(mediaPlaying())return true;
+  return Date.now()-lastActivity<STUDY_IDLE_MS;
+}
+function flushStudy(){
+  if(!studyAnchor)return;
+  const now=Date.now();
+  const add=Math.floor((now-studyAnchor)/1000);
+  if(add<=0)return;
+  if(add>30){studyAnchor=now;return}
+  const k=todayKey();
+  studyTime.days[k]=(studyTime.days[k]||0)+add;
+  studyAnchor+=add*1000;
+  saveStudyTime();
+}
+function studySnapshot(){
+  const days=Object.assign({},studyTime.days||{});
+  if(studyAnchor){
+    const extra=Math.floor((Date.now()-studyAnchor)/1000);
+    if(extra>0&&extra<=30){
+      const k=todayKey();
+      days[k]=(days[k]||0)+extra;
+    }
+  }
+  return days;
+}
+function paintStudy(){
+  const todayEl=document.getElementById('study-today');
+  if(!todayEl)return;
+  const days=studySnapshot();
+  const today=todayKey();
+  const keys=Object.keys(days).filter(k=>days[k]>0).sort().reverse();
+  const total=keys.reduce((n,k)=>n+(days[k]|0),0);
+  todayEl.textContent=fmtDur(days[today]||0);
+  document.getElementById('study-total').textContent=fmtDur(total);
+  document.getElementById('study-daycount').textContent='共 '+keys.length+' 天';
+  const live=document.getElementById('study-live');
+  const on=!!studyAnchor;
+  live.textContent=on?'计时中':'已暂停';
+  live.classList.toggle('on',on);
+  const list=document.getElementById('study-list');
+  const sig=keys.join(',');
+  if(list.dataset.keys!==sig){
+    list.dataset.keys=sig;
+    list.innerHTML=keys.length?keys.map(k=>`
+      <div class="study-row${k===today?' today':''}">
+        <span class="d">${dayLabel(k)}</span>
+        <span class="t" id="sd-${k}">${fmtDur(days[k])}</span>
+      </div>`).join(''):'<div class="study-empty">还没有学习记录。打开页面就会开始计时。</div>';
+  }else{
+    keys.forEach(k=>{const el=document.getElementById('sd-'+k);if(el)el.textContent=fmtDur(days[k])});
+  }
+}
+function tickStudy(){
+  if(studyActive()){
+    if(!studyAnchor)studyAnchor=Date.now();
+    flushStudy();
+  }else if(studyAnchor){
+    flushStudy();
+    studyAnchor=0;
+  }
+  paintStudy();
+}
+function noteActivity(){
+  lastActivity=Date.now();
+  if(!document.hidden&&!studyAnchor)studyAnchor=Date.now();
+}
+function studySummaryHtml(){
+  return `<section class="study-sum">
+    <div class="study-head"><h3>⏱️ 学习时长</h3><span class="study-live" id="study-live">计时中</span></div>
+    <div class="study-kpis">
+      <div class="study-kpi"><div class="lab">今日学习</div><div class="num" id="study-today">0秒</div><div class="meta">今天累计</div></div>
+      <div class="study-kpi total"><div class="lab">累计学习</div><div class="num" id="study-total">0秒</div><div class="meta" id="study-daycount">共 0 天</div></div>
+    </div>
+    <div class="study-days-title">单日时长</div>
+    <div class="study-list" id="study-list"></div>
+  </section>`;
+}
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function getBook(id){return DATA.books.find(b=>b.id===id)}
@@ -870,6 +1001,7 @@ function renderHome(){
       <h2>译林版小学英语 · 四年级</h2>
       <p>单词 · 词组 · 课文点读 · 趣味测验　完全离线可用</p>
     </div>
+    ${studySummaryHtml()}
     <div class="book-grid">
       ${DATA.books.map(b=>`
         <button class="book-card ${b.cls}" onclick="go('/book/${b.id}')">
@@ -882,6 +1014,7 @@ function renderHome(){
         </button>`).join('')}
     </div>
     <p class="foot-note">内容依据译林版（三年级起点）<b>2025秋四上 / 2026春四下</b>新教材整理<br>英文发音由设备内置语音引擎合成，无需联网</p>`;
+  paintStudy();
 }
 
 /* ================= 渲染：单元列表 ================= */
@@ -1231,7 +1364,12 @@ function drawQuizResult(){
 }
 
 /* ================= 启动 ================= */
+['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,noteActivity,{passive:true}));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)lastActivity=Date.now();tickStudy()});
+window.addEventListener('pagehide',()=>{flushStudy();studyAnchor=0});
+studyTimer=setInterval(tickStudy,1000);
 if(!location.hash)location.hash='#/home';else route();
+tickStudy();
 </script>
 <script>
 if('serviceWorker' in navigator){
