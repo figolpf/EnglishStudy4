@@ -120,6 +120,7 @@ button{font-family:inherit;font-size:inherit;color:inherit;border:none;backgroun
 
 /* ---------- 单词卡片 ---------- */
 .cmode{display:flex;background:#e7ebf4;border-radius:13px;padding:4px;margin:0 auto 14px;max-width:340px}
+.cmode.story-switch{max-width:460px}
 .cmode button{flex:1;padding:9px;border-radius:10px;font-size:15px;font-weight:700;color:var(--sub)}
 .cmode button.on{background:#fff;color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .card-stage{perspective:1400px;max-width:460px;margin:0 auto}
@@ -808,6 +809,209 @@ books:[
 ]}
 ]};
 
+/* Cartoon time：2025秋四上 / 2026春四下 Cartoon time 对白 */
+const CARTOONS={
+'4a':{
+1:{t:"Where's the mouse?（鼠标在哪里？）",lines:[
+  ['Sam','What subject do you like best, Bobby?','博比，你最喜欢的学科是什么？'],
+  ['Bobby','I like Music best.','我最喜欢音乐。'],
+  ['Sam','Me too. I also like IT.','我也是。我还喜欢信息科技。'],
+  ['Sam',"It's time for IT. Let's go!",'是该上信息科技课的时候了。我们走吧！'],
+  ['Mrs Fox',"Oh, where's the mouse?",'噢，鼠标哪儿去了？'],
+  ['Bobby',"Mouse? I'm here!",'“鼠”？我在这儿呢！'],
+  ['','Ha ha!','哈哈！']
+]},
+2:{t:'Bobby, get up!（博比，快起床！）',lines:[
+  ['Mum','Bobby, get up! Bobby, get up!','博比，快起床！博比，快起床！'],
+  ['Mum',"It's seven o'clock.",'现在七点了。'],
+  ['Bobby',"It's early.",'还早。'],
+  ['Bobby',"Oh no! It's seven thirty!",'噢不！七点半了！'],
+  ['Mum',"It's time for breakfast.",'是该吃早餐的时候了。'],
+  ['Mum','Wash your face first, Bobby.','博比，先把脸洗了。'],
+  ['Bobby','OK.','好的。'],
+  ['Mum','Bobby, hurry up!','博比，快点儿！'],
+  ['Bobby','What time is it now?','现在几点了？'],
+  ['Mum',"It's eight!",'现在八点了！'],
+  ['Bobby',"I'm coming!",'我来了！']
+]},
+3:{t:"Oh, it's Saturday!（噢，今天是星期六！）",lines:[
+  ['Bobby',"I can't be late for school again!",'我可不能再上学迟到了！'],
+  ['Bobby',"Get up! Get up! It's six thirty!",'起床！起床！六点半了！'],
+  ['Bobby','Good morning, Mr Wilson. When do you get up every day?','早上好，威尔逊先生。你每天什么时候起床？'],
+  ['Mr Wilson','Good morning, Bobby! I get up at five!','早上好，博比！我五点就起床了！'],
+  ['Mr Wilson',"You're up early today!",'你今天起得可真早！'],
+  ['Bobby','Yes, I want to go to school early.','对啊，我想早点去上学。'],
+  ['Mr Wilson','School? What day is it today?','上学？今天是星期几来着？'],
+  ['Bobby',"Oh, it's Saturday!",'噢，今天是星期六！']
+]},
+4:{t:'Come and play with us!（快来和我们一起玩吧！）',lines:[
+  ['Sam','I like playing basketball.','我喜欢打篮球。'],
+  ['Sam','Do you like playing basketball?','你们喜欢打篮球吗？'],
+  ['Bobby','Yes, I do!','是的，我喜欢！'],
+  ['Tina','Me too.','我也是。'],
+  ['Sam',"Let's play!",'一起打篮球吧！'],
+  ['Sam','Do you like playing basketball?','你喜欢打篮球吗？'],
+  ['Billy','Yes, I do.','是的，我喜欢。'],
+  ['Sam','Come and play with us!','快来和我们一起玩吧！'],
+  ['Billy','OK. Thank you!','好的。谢谢！'],
+  ['Billy','Wow! This is great fun!','哇！真是太有趣了！'],
+  ['Billy','Can we play again tomorrow?','我们明天可以再玩吗？'],
+  ['Sam','Sure!','当然可以！']
+]},
+5:{t:"Let's dance together（一起跳舞吧）",lines:[
+  ['Sam','These robots are cool!','这些机器人真酷！'],
+  ['Sam','Look at this robot. His face is cute.','看这个机器人。它的脸好可爱。'],
+  ['Robot','Hello. What\'s your name?','你好。你叫什么名字？'],
+  ['Bobby',"I'm Bobby.",'我是博比。'],
+  ['Sam','Wow! You can talk!','哇！你会说话！'],
+  ['Bobby','Can you dance?','你会跳舞吗？'],
+  ['Robot','Yes, I can. Look!','是的，我会。瞧好了！'],
+  ['Bobby','I can dance too!','我也会跳舞！'],
+  ['Sam',"Wow! You're so tall! Your legs are long.",'哇！你好高！你的腿真长。'],
+  ['Bobby','Now my legs are short!','现在我的腿变短了！'],
+  ['','Ha ha! It\'s great fun.','哈哈！太好玩了！']
+]},
+6:{t:'A rainy day（下雨天）',lines:[
+  ['Bobby','I want a red toy car.','我想要一辆红色的玩具车。'],
+  ['Dad','Bobby, save your money for a rainy day.','博比，把钱存起来，为“下雨天”做好准备。'],
+  ['Bobby','A rainy day?','下雨天？'],
+  ['Bobby',"What's the weather like today?",'今天天气怎么样？'],
+  ['Bobby',"Oh, it's sunny and hot.",'噢，天气晴朗炎热。'],
+  ['Bobby',"What's the weather like today?",'今天天气怎么样？'],
+  ['Bobby',"Oh, it's cloudy.",'噢，今天多云。'],
+  ['Bobby',"It's rainy! It's rainy!",'下雨了！下雨了！'],
+  ['Bobby',"Today is a rainy day! It's time to buy the toy car!",'今天是个下雨天！是该买玩具车的时候了！']
+]},
+7:{t:'Nice to see you again!（很高兴再次见到你们！）',lines:[
+  ['','It is spring. It is warm.','春天到了。天气暖和。'],
+  ['Bobby','Hello! Welcome to my home. We can play together.','你们好！欢迎来到我家。我们可以一起玩。'],
+  ['','It is summer. It is hot.','夏天到了。天气炎热。'],
+  ['Bobby','Wow, you have babies!','哇，你们有小宝宝了！'],
+  ['Bobby','And I have new friends!','我也有新朋友啦！'],
+  ['','It is autumn. It is cool.','秋天到了。天气凉爽。'],
+  ['Bobby','Where are my friends?','我的朋友们去了哪里？'],
+  ['','It is winter. It is cold.','冬天到了。天气寒冷。'],
+  ['Bobby','Where can they be?','它们会在哪里？'],
+  ['','It is spring again. The birds are back.','又到了春天。小鸟们回来了。'],
+  ['Birds','Nice to see you again!','很高兴再次见到你们！']
+]},
+8:{t:'A fancy dress party（化妆舞会）',lines:[
+  ['Sam','Your trousers are so big. Whose trousers are these?','你的裤子也太大了。这是谁的裤子？'],
+  ['Bobby',"Ha ha! They're my father's shorts.",'哈哈！这是我爸爸的短裤。'],
+  ['Sam','You look cool in the cap. Whose cap is it?','你戴着帽子可真帅气。这是谁的帽子？'],
+  ['Bobby',"It's my mother's.",'这是我妈妈的。'],
+  ['Mrs Fox','Happy New Year, boys and girls!','同学们，新年快乐！'],
+  ['Bobby','Happy New Year, Mrs Fox.','狐狸老师，新年快乐！'],
+  ['Sam','I like your sunglasses!','我喜欢你的墨镜。'],
+  ['Mrs Fox','Thank you!','谢谢！'],
+  ['Mrs Fox','Why do I wear sunglasses today? Guess!','为什么我今天要戴墨镜呢？猜猜看！'],
+  ['Sam',"Because they're cool?",'因为墨镜很酷？'],
+  ['Mrs Fox','Because my students are very bright!','因为我的学生们都光彩夺目！']
+]}
+},
+'4b':{
+1:{t:'Thank you for the carrots（谢谢你的胡萝卜）',lines:[
+  ['Ruby','There are so many carrots. I want to share them with my friends.','有这么多胡萝卜呀。我想和我的朋友们分享它们。'],
+  ['Sam',"There are some carrots. They're from my friend Ruby.",'这里有一些胡萝卜。它们是我的朋友鲁比送的。'],
+  ['Sam','Thank you for the carrots, Ruby.','谢谢你的胡萝卜，鲁比。'],
+  ['Bobby','We want to share our fruit with you.','我们想把我们的水果分享给你。'],
+  ['Ruby',"Thank you. Let's have a fruit party!",'谢谢你们。我们举办一场水果派对吧！'],
+  ['Sam','Great!','太棒了！'],
+  ['Bobby','The fruit is so sweet. Like our friendship!','这些水果真甜。像我们的友谊一样！']
+]},
+2:{t:'Are you OK?（你还好吗？）',lines:[
+  ['Bobby','Sam, is there a swing in our new playground?','萨姆，我们的新操场里有秋千吗？'],
+  ['Sam','Yes, there is.','有呀。'],
+  ['Bobby',"Let's go and have a look.",'我们去看看吧。'],
+  ['Bobby',"The swing is great! Let's go and play!",'这个秋千真不错！我们去玩吧！'],
+  ['','Now Bobby is on the swing.','博比现在在秋千上了。'],
+  ['Sam','Go! Go! Go!','冲呀！冲呀！冲呀！'],
+  ['Sam','Be careful, Bobby.','小心点，博比。'],
+  ['Sam','Are you OK?','你还好吗？'],
+  ['Bobby','Yes, but I feel dizzy ...','还好，但我感觉有点头晕……'],
+  ['Sam',"It's time for Art. Let's go to the art room.",'该上美术课了。我们去美术室吧。'],
+  ['Sam','Let me help you.','我来帮你。'],
+  ['Bobby','Thank you!','谢谢！']
+]},
+3:{t:'On the road（在路上）',lines:[
+  ['Bobby',"Let's go to Aunt Alice's home.",'我们去艾丽斯阿姨家吧。'],
+  ['Tina','Great idea! We can take a bus.','好主意！我们可以坐公共汽车去。'],
+  ['Tina','There are many cars and buses on the road.','路上有好多汽车和公共汽车呀。'],
+  ['Bobby',"Yes, it's busy.",'是啊，真热闹。'],
+  ['Tina',"The traffic light is red now. We can't go.",'现在是红灯。我们不能走了。'],
+  ['Bobby','Look! There are ducks on the road.','看！路上有鸭子。'],
+  ['Tina',"We can't go again!",'我们又不能走了！'],
+  ['Driver',"Stay close! Don't run!",'跟紧点！别跑！'],
+  ['Driver','Good little ducks.','真是群乖鸭子。']
+]},
+4:{t:"I'm hot and thirsty, Bobby（博比，我又热又渴）",lines:[
+  ['Tom',"I'm hot and thirsty, Bobby.",'博比，我又热又渴。'],
+  ['Bobby',"Here's some water for you, Tom.",'汤姆，给你些水。'],
+  ['Tom',"I'm hungry, Bobby.",'博比，我饿了。'],
+  ['Bobby','Have a cake, Tom.','汤姆，吃块蛋糕吧。'],
+  ['Bobby',"Tom, please be quiet. Let's have a rest.",'汤姆，请安静一点。我们休息一下吧。'],
+  ['Tom','No, I want to play!','不要，我想玩！'],
+  ['Tom',"What's the matter, Bobby?",'博比，你怎么了？'],
+  ['Bobby',"I'm tired ...",'我累了……'],
+  ['Tom','Can I come tomorrow?','我明天能来吗？']
+]},
+5:{t:'A hot dog?（一个热狗？）',lines:[
+  ['Bobby',"I'm hungry.",'我饿了。'],
+  ['Sam','Me too.','我也是。'],
+  ['Bobby',"Let's eat there.",'我们去那儿吃吧。'],
+  ['Sam','Great!','好极了！'],
+  ['Waiter',"Here's our menu. What would you like?",'这是我们的菜单。你们想吃点什么？'],
+  ['Bobby',"I'd like some fish and chips, please.",'请给我来些炸鱼薯条。'],
+  ['Sam','A sandwich, please.','请给我一个三明治。'],
+  ['Tina','A hot dog, please.','请给我一个热狗。'],
+  ['Waiter','A hot dog?','一个热狗？'],
+  ['Tina','Thank you!','谢谢！'],
+  ['Sam',"How's the hot dog?",'这个热狗怎么样？'],
+  ['Tina',"It's delicious!",'很美味！']
+]},
+6:{t:"Our parents' jobs（我们父母的职业）",lines:[
+  ['Bobby','Look at the hospital, Henry! My parents work there.','亨利，看这家医院。我父母在那儿工作。'],
+  ['Henry',"What are your parents' jobs, Bobby?",'博比，你父母的职业是什么？'],
+  ['Bobby','My dad is a doctor. My mum is a nurse. They help sick people.','我爸爸是一名医生。我妈妈是一名护士。他们帮助生病的人。'],
+  ['Bobby','What about your parents?','你的父母呢？'],
+  ['Henry','My mum is a teacher. My dad is a driver. They\'re busy.','我妈妈是一名老师。我爸爸是一名司机。他们很忙。'],
+  ['Bobby','Is your dad a bus driver?','你爸爸是一名公交车司机吗？'],
+  ['Henry',"No, he isn't.",'不，他不是。'],
+  ['Bobby','Is your dad a taxi driver?','你爸爸是一名出租车司机吗？'],
+  ['Henry',"No, he isn't. My dad is a train driver.",'不，他不是。我爸爸是一名火车司机。'],
+  ['Henry','Look!','看！'],
+  ['Bobby',"Wow! That's cool!",'哇！好酷啊！']
+]},
+7:{t:'Good job!（干得漂亮！）',lines:[
+  ['','It\'s Sunday.','今天是周日。'],
+  ['Bobby',"Let's do some chores.",'我们来做点家务吧。'],
+  ['Mum','Good idea!','好主意！'],
+  ['Mum','Bobby, what are you doing?','博比，你在做什么？'],
+  ['Bobby',"I'm washing the dishes.",'我在洗碗。'],
+  ['Mum','Oh no!','哦不！'],
+  ['Mum','What are you doing now?','你现在在做什么？'],
+  ['Bobby',"I'm washing the clothes.",'我在洗衣服。'],
+  ['Bobby',"I'm watering the flowers.",'我在浇花。'],
+  ['Mum',"You're watering the floor!",'你在浇地板呀！'],
+  ['Mum','What a clean house! Good job!','房子真干净呀！干得漂亮！']
+]},
+8:{t:"Sam's fish soup（萨姆的鱼汤）",lines:[
+  ['Sam',"It's Dad's birthday today. I can cook fish soup for him!",'今天是爸爸的生日。我可以给他做鱼汤！'],
+  ['Bobby','Hi, Sam!','嗨，萨姆！'],
+  ['Sam','Hi, Bobby!','嗨，博比！'],
+  ['Bobby',"Look! I have a new book. I like this book. It's really fun.",'看！我有一本新书。我喜欢这本书。真的太有趣了。'],
+  ['Bobby','Sam, are you cooking?','萨姆，你在做饭吗？'],
+  ['Sam','Oh, my fish soup!','噢，我的鱼汤！'],
+  ['Sam','Happy Birthday, Dad!','爸爸，生日快乐！'],
+  ['Dad','Thank you! But be careful next time.','谢谢你！不过下次要小心哦。']
+]}
+}
+};
+DATA.books.forEach(b=>{
+  const pack=CARTOONS[b.id]||{};
+  b.units.forEach(u=>{if(pack[u.n])u.cartoon=pack[u.n]});
+});
+
 /* ================= 状态与工具 ================= */
 const $app=document.getElementById('app');
 const ACCENT={'4a':['#4f7cff','#6a5af9'],'4b':['#ff9f43','#ee5d6c']};
@@ -1157,19 +1361,32 @@ function renderPhrases(u){
 }
 
 /* ---------- 课文 ---------- */
+let storyPart='story';
+function currentScript(u){return storyPart==='cartoon'&&u.cartoon?u.cartoon:u.story}
+function setStoryPart(part){
+  if(storyPart===part)return;
+  stopSpeak();speakingLineIdx=-1;storyPart=part;
+  const p=hashParts(),u=getBook(p[1]).units.find(x=>x.n===+p[2]);
+  if(u)renderStory(u);
+}
 function avColor(name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;return AV_COLORS[h%AV_COLORS.length]}
 function avText(name){if(!name)return'旁白';const t=name==="Yang Ling's mum"?'M':name[0];return t.toUpperCase()}
 function renderStory(u){
+  const script=currentScript(u);
   const el=document.getElementById('panel-story');
   el.innerHTML=`
+    <div class="cmode story-switch">
+      <button class="${storyPart==='story'?'on':''}" onclick="setStoryPart('story')">📖 Story time</button>
+      <button class="${storyPart==='cartoon'?'on':''}" onclick="setStoryPart('cartoon')">🎬 Cartoon time</button>
+    </div>
     <div class="story-ctrl">
       <button class="btn primary" id="btn-auto" onclick="toggleAuto()">▶️ 播放全文</button>
       <button class="btn" onclick="stopSpeak();updateAutoBtn()">⏹️ 停止</button>
       <button class="btn toggle ${settings.zh?'on':''}" id="btn-zh" onclick="toggleZh()">🇨🇳 中文</button>
       <button class="btn toggle on" onclick="cycleRate()" id="btn-rate">🐢 ${rateLabel()}</button>
     </div>
-    <div class="story-title">${esc(u.story.t)}</div>
-    ${u.story.lines.map((l,i)=>`
+    <div class="story-title">${esc(script.t)}</div>
+    ${script.lines.map((l,i)=>`
       <div class="sline ${l[0]?'':'narr'}" id="sline-${i}" onclick="tapLine(${i})">
         <div class="avatar" style="background:${l[0]?avColor(l[0]):'#b7c0d0'}">${l[0]?esc(avText(l[0])):'📖'}</div>
         <div class="sbubble">
@@ -1220,7 +1437,7 @@ let utterGen=0;
 function speakLine(u,i){
   const gen=++utterGen;
   highlightLine(i);
-  speak(u.story.lines[i][1],{onend:()=>{
+  speak(currentScript(u).lines[i][1],{onend:()=>{
     if(gen!==utterGen)return; // 已被新操作取代（如切换语速重读）
     if(speakingLineIdx===i&&!autoReading){document.getElementById('sline-'+i)?.classList.remove('reading');speakingLineIdx=-1}
     if(autoReading)autoTimer=setTimeout(()=>readStory(u,i+1),350)
@@ -1228,7 +1445,7 @@ function speakLine(u,i){
 }
 function readStory(u,i){
   if(!autoReading)return;
-  if(i>=u.story.lines.length){stopSpeak();stopAuto();return}
+  if(i>=currentScript(u).lines.length){stopSpeak();stopAuto();return}
   speakLine(u,i);
 }
 
@@ -1241,7 +1458,10 @@ const KINDS={
 function quizPool(u,k){
   let p;
   if(k==='phrase')p=u.phrases.map(x=>({en:x[0],zh:x[1]}));
-  else if(k==='sent')p=u.story.lines.map(x=>({en:x[1],zh:x[2],who:x[0]}));
+  else if(k==='sent'){
+    const lines=u.story.lines.concat(u.cartoon?u.cartoon.lines:[]);
+    p=lines.map(x=>({en:x[1],zh:x[2],who:x[0]}));
+  }
   else p=u.words.map(x=>({en:x[0],zh:x[2],ipa:x[1]}));
   const seen=new Set();
   return p.filter(x=>!seen.has(x.en)&&seen.add(x.en));
