@@ -1,7 +1,7 @@
 {
-  "name": "译林英语四年级",
-  "short_name": "英语四年级",
-  "description": "译林版四年级英语离线学习：单词、词组、课文、闯关",
+  "name": "译林英语",
+  "short_name": "译林英语",
+  "description": "译林版小学英语离线学习：单词、词组、课文、闯关",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
