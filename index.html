@@ -1390,7 +1390,7 @@ function renderHome(){
         </button>`;
       }).join('')}
     </div>
-    <p class="foot-note">一、二年级为译林版现行课本。三年级为 <b>2024</b> 新教材，四年级为 <b>2025秋四上 / 2026春四下</b>。<br>六年级仍用三年级起点现行课本。五年级上册是 2026 秋新教材，单词表核对后再放入。<br>一、二、三、六年级先收录单词和词组。四年级可以课文点读。发音由设备语音引擎合成。</p>`;
+    <p class="foot-note">一、二年级为译林版现行课本。三年级为 <b>2024</b> 新教材，四年级为 <b>2025秋四上 / 2026春四下</b>。<br>六年级仍用三年级起点现行课本。五年级上册是 2026 秋新教材，单词表核对后再放入。<br>一、二、三、六年级可以点读各单元里的课文句子。四年级另外有完整的 Story time 和 Cartoon time。发音优先播放已下载的本地音频。</p>`;
   paintStudy();
 }
 function renderGrade(g){
@@ -1411,7 +1411,7 @@ function renderGrade(g){
           <div>
             <div class="tag">${b.en}</div>
             <h3>${b.name}</h3>
-            <p>${b.units.length} 个单元${b.grade===4?' · 单词 · 词组 · 课文':' · 单词和词组'}</p>
+            <p>${b.units.length} 个单元 · 单词 · 词组 · 课文</p>
           </div>
         </button>`;
       }).join('')}
@@ -1590,17 +1590,21 @@ function setStoryPart(part){
 function avColor(name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;return AV_COLORS[h%AV_COLORS.length]}
 function avText(name){if(!name)return'旁白';const t=name==="Yang Ling's mum"?'M':name[0];return t.toUpperCase()}
 function renderStory(u){
-  const script=currentScript(u);
+  const hasC=!!(u.cartoon&&u.cartoon.lines&&u.cartoon.lines.length);
+  const hasS=!!(u.story&&u.story.lines&&u.story.lines.length);
   const el=document.getElementById('panel-story');
-  if(!script||!script.lines){
-    el.innerHTML=`<div class="quiz-home"><div class="q-emoji">📖</div><h3 style="margin-top:8px">课文还在整理</h3><p style="color:var(--sub);font-size:14.5px">这一册可以先学单词和词组。四年级上册、下册可以课文点读。</p></div>`;
+  if(!hasC&&!hasS){
+    el.innerHTML=`<div class="quiz-home"><div class="q-emoji">📖</div><h3 style="margin-top:8px">这一单元没有课文句子</h3><p style="color:var(--sub);font-size:14.5px">单词表里主要是单词和词组，可以先学这两项。四年级上册、下册有完整课文。</p></div>`;
     return;
   }
+  if(storyPart==='cartoon'&&!hasC)storyPart='story';
+  if(storyPart==='story'&&!hasS)storyPart='cartoon';
+  const script=currentScript(u);
   el.innerHTML=`
-    <div class="cmode story-switch">
+    ${(hasC&&hasS)?`<div class="cmode story-switch">
       <button class="${storyPart==='cartoon'?'on':''}" onclick="setStoryPart('cartoon')">🎬 Cartoon time</button>
       <button class="${storyPart==='story'?'on':''}" onclick="setStoryPart('story')">📖 Story time</button>
-    </div>
+    </div>`:''}
     <div class="story-ctrl">
       <button class="btn primary" id="btn-auto" onclick="toggleAuto()">▶️ 播放全文</button>
       <button class="btn" onclick="stopSpeak();updateAutoBtn()">⏹️ 停止</button>
