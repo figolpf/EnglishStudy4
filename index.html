@@ -66,6 +66,12 @@ button{font-family:inherit;font-size:inherit;color:inherit;border:none;backgroun
 .book-card p{font-size:13px;opacity:.92}
 .foot-note{text-align:center;color:#9aa4b4;font-size:12.5px;padding:8px 24px 0}
 .foot-note b{color:var(--sub)}
+.audio-sync{margin:16px 18px 0;background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:14px 16px 12px}
+.audio-sync p{margin:0;font-size:14px;font-weight:700;color:var(--text)}
+.audio-sync-bar{height:8px;border-radius:99px;background:#e8eef8;overflow:hidden;margin-top:10px}
+.audio-sync-bar span{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#4f7cff,#6a5af9)}
+.audio-sync .btn{margin-top:10px}
+.audio-sync .btn[hidden]{display:none !important}
 .study-sum{margin:16px 18px 0;background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:16px 16px 12px}
 .study-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .study-head h3{font-size:16px;font-weight:800}
@@ -402,6 +408,7 @@ audio.fix-audio{width:100%;margin:8px 0 10px;display:block}
 </div>
 
 <script src="extra-books.js"></script>
+<script src="audio-list.js"></script>
 <script>
 /* ================= 教材数据（译林版三起·2025秋四上 / 2026春四下） ================= */
 const DATA = {
@@ -1359,6 +1366,110 @@ function route(){
   renderHome();
 }
 
+/* ================= 语音保存到本机 ================= */
+const AUDIO_CACHE='yl4-v14';
+const AUDIO_BATCH=6;
+let audioSync={done:0,total:0,miss:0,running:false,offline:false,full:false};
+let audioSyncGen=0;
+let audioBeat=0;
+function audioSyncHtml(){
+  return `<div class="audio-sync" id="audio-sync">
+    <p id="audio-sync-text">正在准备语音…</p>
+    <div class="audio-sync-bar"><span id="audio-sync-fill"></span></div>
+    <button class="btn" id="audio-sync-retry" hidden type="button" onclick="startAudioSync()">继续下载</button>
+  </div>`;
+}
+function paintAudioProgress(){
+  const text=document.getElementById('audio-sync-text');
+  const fill=document.getElementById('audio-sync-fill');
+  const retry=document.getElementById('audio-sync-retry');
+  if(!text)return;
+  const total=audioSync.total;
+  const done=total?Math.min(audioSync.done,total):0;
+  if(fill)fill.style.width=(total?Math.round(done/total*100):0)+'%';
+  let msg='正在准备语音…';
+  let showRetry=false;
+  if(!('caches' in window))msg='这台浏览器不能把语音保存到本机。';
+  else if(audioSync.full)msg='手机存储不够，已保存 '+done+' / '+total+'。';
+  else if(total&&done>=total)msg='语音已保存到本机 '+done+' / '+total;
+  else if(total&&audioSync.offline){msg='语音已保存 '+done+' / '+total+'。联网后会继续下载。';showRetry=true}
+  else if(total&&!audioSync.running&&audioSync.miss){msg='语音已保存 '+done+' / '+total+'，还有 '+audioSync.miss+' 个没下完。';showRetry=true}
+  else if(total)msg='正在保存语音到本机 '+done+' / '+total;
+  text.textContent=msg;
+  if(retry)retry.hidden=!showRetry;
+}
+async function startAudioSync(){
+  if(audioSync.running)return;
+  if(!('caches' in window)||typeof AUDIO_FILES==='undefined'){paintAudioProgress();return}
+  const gen=++audioSyncGen;
+  audioSync.running=true;
+  audioSync.offline=false;
+  audioSync.full=false;
+  audioSync.miss=0;
+  audioBeat=Date.now();
+  const files=AUDIO_FILES;
+  audioSync.total=files.length;
+  paintAudioProgress();
+  let cache;
+  try{cache=await caches.open(AUDIO_CACHE)}
+  catch(e){audioSync.running=false;paintAudioProgress();return}
+  if(gen!==audioSyncGen)return;
+  const have=new Set();
+  try{
+    (await cache.keys()).forEach(req=>{
+      const i=req.url.lastIndexOf('audio/');
+      if(i>=0)have.add(req.url.slice(i).split('?')[0]);
+    });
+  }catch(e){}
+  const missing=files.filter(f=>!have.has(f));
+  audioSync.done=files.length-missing.length;
+  paintAudioProgress();
+  if(!navigator.onLine){
+    audioSync.offline=true;
+    audioSync.miss=missing.length;
+    audioSync.running=false;
+    paintAudioProgress();
+    return;
+  }
+  let cursor=0;
+  let stop=false;
+  async function worker(){
+    while(!stop&&gen===audioSyncGen){
+      const i=cursor++;
+      if(i>=missing.length)return;
+      try{
+        const resp=await fetch(missing[i]);
+        if(!resp.ok)continue;
+        await cache.put(missing[i],resp);
+        audioSync.done++;
+        audioBeat=Date.now();
+        paintAudioProgress();
+      }catch(e){
+        if(e&&(e.name==='QuotaExceededError'||e.code===22)){audioSync.full=true;stop=true}
+      }
+    }
+  }
+  await Promise.all(Array.from({length:AUDIO_BATCH},()=>worker()));
+  if(gen!==audioSyncGen)return;
+  let left=0;
+  for(const f of missing){
+    try{if(!(await cache.match(f)))left++}catch(e){left++}
+  }
+  audioSync.done=files.length-left;
+  audioSync.miss=left;
+  audioSync.offline=!navigator.onLine&&left>0;
+  audioSync.running=false;
+  paintAudioProgress();
+}
+function bootAudio(){
+  window.addEventListener('online',()=>{audioSync.running=false;startAudioSync()});
+  if(!('serviceWorker' in navigator)){startAudioSync();return}
+  let started=false;
+  const once=()=>{if(started)return;started=true;startAudioSync()};
+  navigator.serviceWorker.ready.then(once).catch(once);
+  setTimeout(once,4000);
+}
+
 /* ================= 渲染：首页 ================= */
 function renderHome(){
   $app.innerHTML=`
@@ -1369,6 +1480,7 @@ function renderHome(){
       <p>单词 · 词组 · 课文点读 · 趣味测验　完全离线可用</p>
     </div>
     ${studySummaryHtml()}
+    ${audioSyncHtml()}
     <button class="match-entry" onclick="go('/match')">
       <span class="me-emoji">🧩</span>
       <span><b>单词词组消消乐</b><small>中英文配对消除 · 默认 1 分钟</small></span>
@@ -1392,6 +1504,7 @@ function renderHome(){
     </div>
     <p class="foot-note">一、二年级为译林版现行课本。三年级为 <b>2024</b> 新教材，四年级为 <b>2025秋四上 / 2026春四下</b>。<br>六年级仍用三年级起点现行课本。五年级上册是 2026 秋新教材，单词表核对后再放入。<br>一、二、三、六年级可以点读各单元里的课文句子。四年级另外有完整的 Story time 和 Cartoon time。发音优先播放已下载的本地音频。</p>`;
   paintStudy();
+  paintAudioProgress();
 }
 function renderGrade(g){
   const meta=GRADES.find(x=>x.id===g);
@@ -2824,7 +2937,11 @@ loadCurrentUser();
 ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,noteActivity,{passive:true}));
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden){freezeMatchClock();flushStudy();studyAnchor=0}
-  else resumeMatchClock();
+  else{
+    resumeMatchClock();
+    if(audioSync.running&&Date.now()-audioBeat>8000)audioSync.running=false;
+    if(!(audioSync.total&&audioSync.done>=audioSync.total&&!audioSync.miss))startAudioSync();
+  }
   tickStudy();
 });
 window.addEventListener('pagehide',()=>{flushStudy();studyAnchor=0});
@@ -2832,10 +2949,17 @@ studyTimer=setInterval(tickStudy,1000);
 loadFixAudio().catch(()=>{}).then(()=>{
   if(!location.hash)location.hash='#/home';else route();
   tickStudy();
+  bootAudio();
 });
 </script>
 <script>
 if('serviceWorker' in navigator){
+  let swRefreshing=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(swRefreshing)return;
+    swRefreshing=true;
+    location.reload();
+  });
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(e=>console.log('SW reg fail',e)));
 }
 </script>
