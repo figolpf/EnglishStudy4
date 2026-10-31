@@ -281,6 +281,18 @@ button{font-family:inherit;font-size:inherit;color:inherit;border:none;backgroun
 .qmode .qe{font-size:32px;width:54px;height:54px;border-radius:14px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex:none}
 .qmode b{font-size:18px}
 .qmode small{display:block;color:var(--sub);font-size:13.5px;margin-top:2px}
+.speak-switch{display:flex;justify-content:center;gap:8px;margin:2px 0 8px}
+.speak-switch button{padding:7px 16px;border-radius:99px;background:#eef1f6;font-weight:800;font-size:14px;color:var(--sub)}
+.speak-switch button.on{background:var(--accent);color:#fff}
+.qmic{
+  display:flex;align-items:center;justify-content:center;margin:16px auto 0;
+  min-width:196px;padding:16px 24px;border-radius:999px;background:var(--accent);color:#fff;
+  font-size:18px;font-weight:800;box-shadow:0 8px 18px rgba(79,124,255,.28)
+}
+.qmic.on{background:#ee5d6c}
+.qmic:disabled{opacity:.55}
+.qheard{text-align:center;min-height:22px;margin-top:12px;color:var(--sub);font-size:15px}
+.qspeak-tip{text-align:center;color:var(--sub);font-size:13px;margin-top:8px}
 .qcard{max-width:600px;margin:0 auto;background:var(--card);border-radius:22px;padding:26px 22px;box-shadow:var(--shadow)}
 .qprog{height:8px;border-radius:5px;background:#e9edf5;overflow:hidden;margin-bottom:18px}
 .qprog i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:5px;transition:width .3s}
@@ -1353,6 +1365,7 @@ window.addEventListener('hashchange',route);
 function route(){
   stopSpeak();
   stopMatch();
+  stopQuizMic();
   abandonFixMic();
   if(!currentUser)return renderLogin();
   const p=hashParts();
@@ -1367,7 +1380,7 @@ function route(){
 }
 
 /* ================= 语音保存到本机 ================= */
-const AUDIO_CACHE='yl4-v14';
+const AUDIO_CACHE='yl4-v15';
 const AUDIO_BATCH=6;
 let audioSync={done:0,total:0,miss:0,running:false,offline:false,full:false};
 let audioSyncGen=0;
@@ -1790,9 +1803,9 @@ function readStory(u,i){
 
 /* ---------- 闯关（单词 / 词组 / 句子） ---------- */
 const KINDS={
-  word:{emoji:'🔤',name:'单词挑战',size:10,label:'单词',descs:['显示中文意思，选出正确的英文单词','显示英文单词，选出正确的中文意思','听发音，选出你听到的单词'],tab:'words',rev:'🔤 去复习单词'},
-  phrase:{emoji:'📝',name:'词组挑战',size:8,label:'词组',descs:['显示中文意思，选出正确的英文词组','显示英文词组，选出正确的中文意思','听发音，选出你听到的词组'],tab:'phrases',rev:'📝 去复习词组'},
-  sent:{emoji:'📖',name:'句子挑战',size:8,label:'句子',descs:['显示中文句意，选出正确的英文句子','显示英文句子，选出正确的中文意思','听发音，选出你听到的句子'],tab:'story',rev:'📖 去读课文'}
+  word:{emoji:'🔤',name:'单词挑战',size:10,label:'单词',descs:['显示中文意思，选出正确的英文单词','显示英文单词，选出正确的中文意思','听发音，选出你听到的单词','看中文或英文，读出对应的英文'],tab:'words',rev:'🔤 去复习单词'},
+  phrase:{emoji:'📝',name:'词组挑战',size:8,label:'词组',descs:['显示中文意思，选出正确的英文词组','显示英文词组，选出正确的中文意思','听发音，选出你听到的词组','看中文或英文，读出对应的英文'],tab:'phrases',rev:'📝 去复习词组'},
+  sent:{emoji:'📖',name:'句子挑战',size:8,label:'句子',descs:['显示中文句意，选出正确的英文句子','显示英文句子，选出正确的中文意思','听发音，选出你听到的句子','看中文或英文，读出对应的英文'],tab:'story',rev:'📖 去读课文'}
 };
 function quizPool(u,k){
   let p;
@@ -1820,6 +1833,7 @@ function renderQuizHome(bid,u){
         <button class="qmode" onclick="startQuiz('ec','${k}')"><span class="qe">🇨🇳</span><span><b>看中文 · 选英文</b><small>${K.descs[0]}</small></span></button>
         <button class="qmode" onclick="startQuiz('ce','${k}')"><span class="qe">🔤</span><span><b>看英文 · 选中文</b><small>${K.descs[1]}</small></span></button>
         <button class="qmode" onclick="startQuiz('listen','${k}')"><span class="qe">🔊</span><span><b>听音 · 选答案</b><small>${K.descs[2]}</small></span></button>
+        <button class="qmode" onclick="startQuiz('speak','${k}')"><span class="qe">🎤</span><span><b>看提示 · 读英文</b><small>${K.descs[3]}</small></span></button>
       </div>`}).join('')}
   </div>`;
 }
@@ -1828,14 +1842,36 @@ function startQuiz(mode,kind){
   const pool=quizPool(u,kind);
   if(!pool.length)return;
   const picks=shuffle(pool).slice(0,Math.min(KINDS[kind].size,pool.length));
-  quizState={bid,u,mode,kind,qs:picks.map(it=>({it,ans:null})),idx:0,score:0,locked:false};
+  quizState={bid,u,mode,kind,prompt:mode==='speak'?'zh':'',qs:picks.map(it=>({it,ans:null})),idx:0,score:0,locked:false};
   drawQuiz();
 }
 function drawQuiz(){
+  stopQuizMic();
   const q=quizState;if(!q)return;
   const el=document.getElementById('panel-quiz');
   if(q.idx>=q.qs.length)return drawQuizResult();
   const item=q.qs[q.idx].it;
+  if(q.mode==='speak'){
+    if(q.prompt!=='en')q.prompt='zh';
+    const prompt=q.prompt==='en'?item.en:item.zh;
+    el.innerHTML=`
+      <div class="qcard ${q.kind==='sent'?'sent':q.kind==='phrase'?'phr':''}">
+        <div class="qprog"><i style="width:${q.idx/q.qs.length*100}%"></i></div>
+        <div class="qmeta">第 ${q.idx+1} 题 / 共 ${q.qs.length} 题　已答对 ${q.score} 题</div>
+        <div class="speak-switch">
+          <button type="button" class="${q.prompt==='zh'?'on':''}" onclick="setQuizPrompt('zh')">看中文</button>
+          <button type="button" class="${q.prompt==='en'?'on':''}" onclick="setQuizPrompt('en')">看英文</button>
+        </div>
+        <div class="qprompt">${esc(prompt)}</div>
+        ${q.prompt==='en'&&item.ipa?`<div class="qprompt-ipa">${item.ipa}</div>`:''}
+        <button class="qmic" id="qmic" type="button" onclick="toggleQuizMic()">🎤 开始说</button>
+        <p class="qspeak-tip">读出对应的英文。读音会和这条标准语音核对，识别需要联网。</p>
+        <div class="qheard" id="qheard"></div>
+        <div class="qfeedback" id="qfeedback"></div>
+        <button class="btn primary qnext hidden" id="qnext" onclick="nextQuiz()">下一题 ›</button>
+      </div>`;
+    return;
+  }
   const others=shuffle(quizPool(q.u,q.kind).filter(x=>x.en!==item.en)).slice(0,3);
   const opts=shuffle([item,...others]);
   let head='';
@@ -1864,6 +1900,108 @@ function drawQuiz(){
   if(q.mode==='listen')setTimeout(()=>speak(item.en),250);
 }
 function replayQ(){const q=quizState;if(q)speak(q.qs[q.idx].it.en)}
+function normSpeak(s){
+  let t=String(s||'').toLowerCase().replace(/[’‘]/g,"'");
+  [['what\'s','what is'],['where\'s','where is'],['who\'s','who is'],['that\'s','that is'],['it\'s','it is'],['he\'s','he is'],['she\'s','she is'],['let\'s','let us'],['i\'m','i am'],['don\'t','do not'],['can\'t','can not'],['won\'t','will not'],['isn\'t','is not'],['aren\'t','are not']].forEach(pair=>{t=t.split(pair[0]).join(pair[1])});
+  t=t.replace(/n't/g,' not').replace(/'re/g,' are').replace(/'ve/g,' have').replace(/'ll/g,' will').replace(/'/g,'');
+  return t.replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+}
+function speakHit(heard,target){
+  const h=normSpeak(heard),t=normSpeak(target);
+  if(!h||!t)return false;
+  if(h===t)return true;
+  const tw=t.split(' ').filter(Boolean),hw=h.split(' ').filter(Boolean);
+  const same=(a,b)=>a===b||a===b+'s'||b===a+'s';
+  if(tw.length===1)return hw.some(w=>same(w,tw[0]));
+  let i=0;
+  hw.forEach(w=>{if(i<tw.length&&same(w,tw[i]))i++});
+  return i===tw.length;
+}
+let quizRec=null;
+function stopQuizMic(){
+  const rec=quizRec;
+  quizRec=null;
+  if(!rec)return;
+  rec.onresult=rec.onerror=rec.onend=null;
+  try{rec.stop()}catch(e){}
+}
+function setQuizPrompt(p){
+  const q=quizState;
+  if(!q||q.locked||q.mode!=='speak'||q.prompt===p)return;
+  q.prompt=p;
+  drawQuiz();
+}
+function toggleQuizMic(){
+  const q=quizState;
+  if(!q||q.locked||q.mode!=='speak')return;
+  if(quizRec){try{quizRec.stop()}catch(e){}return}
+  const Rec=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const heardEl=document.getElementById('qheard');
+  if(!Rec){if(heardEl)heardEl.textContent='这个浏览器不能识别读音，请用手机上的 Chrome。';return}
+  const rec=new Rec();
+  quizRec=rec;
+  rec.lang='en-US';
+  rec.interimResults=true;
+  rec.maxAlternatives=5;
+  rec.continuous=false;
+  const btn=document.getElementById('qmic');
+  if(btn){btn.classList.add('on');btn.textContent='正在听… 点一下结束'}
+  if(heardEl)heardEl.textContent='请读出英文';
+  const finals=[];
+  let interim='';
+  let failed=false;
+  rec.onresult=e=>{
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const alts=[...Array(e.results[i].length)].map((_,n)=>e.results[i][n].transcript);
+      if(e.results[i].isFinal)finals.push(alts);
+      else interim=alts[0]||'';
+    }
+    const show=finals.length?finals[finals.length-1][0]:interim;
+    const el=document.getElementById('qheard');
+    if(el&&show)el.textContent='听到：'+show;
+  };
+  rec.onerror=ev=>{
+    if(!ev||ev.error==='aborted'||quizRec!==rec)return;
+    failed=true;
+    const el=document.getElementById('qheard');
+    if(!el)return;
+    if(ev.error==='not-allowed')el.textContent='请允许使用麦克风后再试。';
+    else if(ev.error==='network')el.textContent='读音识别需要联网，请打开网络后再试。';
+    else el.textContent='没听清，再点麦克风说一次。';
+  };
+  rec.onend=()=>{
+    if(quizRec!==rec)return;
+    quizRec=null;
+    const b=document.getElementById('qmic');
+    if(b){b.classList.remove('on');b.textContent='🎤 再试一次'}
+    if(q.locked||failed)return;
+    const cands=finals.length?finals.flat():(interim?[interim]:[]);
+    if(!cands.length){
+      const el=document.getElementById('qheard');
+      if(el)el.textContent='没听清，再点麦克风说一次。';
+      return;
+    }
+    const idx=q.idx;
+    gradeSpeak(cands.some(c=>speakHit(c,q.qs[idx].it.en)),cands[0]);
+  };
+  try{rec.start()}catch(e){quizRec=null;if(heardEl)heardEl.textContent='麦克风暂时打不开，请再试一次。'}
+}
+function gradeSpeak(correct,heard){
+  const q=quizState;if(!q||q.locked)return;q.locked=true;
+  stopQuizMic();
+  if(correct)q.score++;
+  const cur=q.qs[q.idx];cur.ans=correct;
+  if(q.kind==='word'&&!correct){stars[wordKey(q.bid,q.u.n,[cur.it.en])]=true;saveStars()}
+  const mic=document.getElementById('qmic');
+  if(mic)mic.disabled=true;
+  const fb=document.getElementById('qfeedback');
+  fb.className='qfeedback '+(correct?'ok':'bad');
+  fb.innerHTML=correct?'✅ 读对了！':`❌ 听到：${esc(heard||'')}　正确读法：<b>${esc(cur.it.en)}</b>`;
+  const idx=q.idx;
+  speak(correct?'Good job':'Oh no',{rate:1,onend:()=>{if(!correct&&quizState===q&&q.idx===idx)speak(cur.it.en)}});
+  const nb=document.getElementById('qnext');nb.classList.remove('hidden');
+  nb.textContent=q.idx+1>=q.qs.length?'查看成绩 🏁':'下一题 ›';
+}
 let pickedBtn=null;
 function pickOpt(btn){
   const q=quizState;if(q.locked)return;
@@ -2796,6 +2934,7 @@ function idleLogout(){
   flushStudy();
   studyAnchor=0;
   stopMatch();
+  stopQuizMic();
   abandonFixMic();
   sessionStorage.removeItem('yl4_uid');
   currentUser=null;
